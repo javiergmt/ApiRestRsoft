@@ -81,4 +81,6 @@
         public string? Descripcion { get; set; }
         public char Cocido { get; set; }
     }
+
+    
 }

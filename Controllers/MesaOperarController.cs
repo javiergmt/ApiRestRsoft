@@ -30,7 +30,7 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
-                        return new JsonResult(new { res = "OK" , mesa = m.NroMesa});
+                        return new JsonResult(new { res = "OK", mesa = m.NroMesa });
                     }
                     catch (Exception ex)
                     {
@@ -39,9 +39,9 @@ namespace ApiRestRs.Controllers
 
                 }
             }
-       
+
         }
-       
+
         [HttpPost]
         [Route("mesa_desbloquear")]
         [EnableCors("MyCors")]
@@ -65,11 +65,11 @@ namespace ApiRestRs.Controllers
                     {
                         return new JsonResult(new { res = ex });
                     }
-                   
+
 
                 }
             }
-             
+
         }
 
         [HttpPost]
@@ -88,7 +88,7 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
-                        return new JsonResult(new { res = "OK", mesa = m.nromesa, mozo = m.mozo });
+                        return new JsonResult(new { res = "OK", mesa = m.nromesa, m.mozo });
                     }
                     catch (Exception ex)
                     {
@@ -103,6 +103,8 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("mesa_det")]
         [EnableCors("MyCors")]
+
+
         public ActionResult Post([FromBody] EnMesaDet m)
         {
             using (SqlConnection connection = new(con))
@@ -129,11 +131,11 @@ namespace ApiRestRs.Controllers
                     cmd.Parameters.AddWithValue("@descripcion", m.descripcion);
                     cmd.Parameters.AddWithValue("@fechaHora", m.fechaHora);
                     cmd.Parameters.AddWithValue("@comanda", m.comanda);
-                  
+
                     try
                     {
                         cmd.ExecuteNonQuery();
-                        return new JsonResult(new { res = "OK", mesa = m.nroMesa, idDetalle = m.idDetalle });
+                        return new JsonResult(new { res = "OK", mesa = m.nroMesa, m.idDetalle });
                     }
                     catch (Exception ex)
                     {
@@ -144,6 +146,8 @@ namespace ApiRestRs.Controllers
                 }
             }
         }
+
+
 
         [HttpPost]
         [Route("mesa_det_gustos")]
@@ -160,11 +164,11 @@ namespace ApiRestRs.Controllers
                     cmd.Parameters.AddWithValue("@idDetalle", m.idDetalle);
                     cmd.Parameters.AddWithValue("@idGusto", m.idGusto);
                     cmd.Parameters.AddWithValue("@descripcion", m.descripcion);
-                    
+
                     try
                     {
                         cmd.ExecuteNonQuery();
-                        return new JsonResult(new { res = "OK", mesa = m.nroMesa, idDetalle = m.idDetalle });
+                        return new JsonResult(new { res = "OK", mesa = m.nroMesa, m.idDetalle });
                     }
                     catch (Exception ex)
                     {
@@ -203,7 +207,7 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
-                        return new JsonResult(new { res = "OK", mesa = m.nroMesa, idDetalle = m.idDetalle });
+                        return new JsonResult(new { res = "OK", mesa = m.nroMesa, m.idDetalle });
                     }
                     catch (Exception ex)
                     {
@@ -235,7 +239,7 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
-                        return new JsonResult(new { res = "OK", mesa = m.nroMesa, idDetalle = m.idDetalle });
+                        return new JsonResult(new { res = "OK", mesa = m.nroMesa, m.idDetalle });
                     }
                     catch (Exception ex)
                     {
@@ -260,7 +264,7 @@ namespace ApiRestRs.Controllers
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@nroMesa", m.nroMesa);
                     cmd.Parameters.AddWithValue("@cant", m.cant);
-                    
+
                     try
                     {
                         cmd.ExecuteNonQuery();
@@ -288,7 +292,7 @@ namespace ApiRestRs.Controllers
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@nroMesa", m.nroMesa);
-                   
+
                     try
                     {
                         cmd.ExecuteNonQuery();
@@ -304,5 +308,120 @@ namespace ApiRestRs.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Route("mesa_det_mult")]
+        [EnableCors("MyCors")]
+        public ActionResult Post([FromBody] EnMesaDetMult m)
+        {
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                SqlCommand command = connection.CreateCommand();
+
+                //command.CommandText =
+                //    "Insert into Region (RegionID, RegionDescription) VALUES (100, 'Description')";
+                //command.ExecuteNonQuery();
+                SqlTransaction transaction;
+
+                // Start a local transaction.
+                transaction = connection.BeginTransaction();
+                command.Transaction = transaction;
+                                       
+
+                if (m.MesaDetM != null)
+                {
+                    try
+                    {
+
+                        foreach (var Mdet in m.MesaDetM)
+                        {
+                            // Grabo detalle
+                            command.CommandText =
+                            "Insert into En_MesaDet (NroMesa, IdDetalle,idPlato,Cant,PcioUnit,Importe,Obs,idTamanio," +
+                            "Tamanio, Procesado, Hora, idMozo, idUsuario, Cocinado, EsEntrada, Descripcion," +
+                            "FechaHora, Comanda) " +
+                            "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + Mdet.idPlato + "," + Mdet.cant + "," + Mdet.pcioUnit +
+                            "," + Mdet.importe + ",'" + Mdet.obs + "'," + Mdet.idTamanio + ",'" + Mdet.tamanio + "','" + Mdet.procesado +
+                            "','" + Mdet.hora + "'," + Mdet.idMozo + "," + Mdet.idUsuario + ",'" + Mdet.cocinado + "','" + Mdet.esEntrada +
+                            "','" + Mdet.descripcion + "','" + Mdet.fechaHora + "','" + Mdet.comanda + "')";
+
+                            command.ExecuteNonQuery();
+
+                            if (Mdet.Gustos != null)
+                            {
+                                foreach (var Mgus in Mdet.Gustos)
+                                {
+                                    // Grabo gustos
+                                    command.CommandText =
+                                    "Insert into En_MesaDet_Gustos (NroMesa, IdDetalle,idGusto, Descripcion) " +
+                                    "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + Mgus.idGusto +
+                                    ", '"+Mgus.descripcion + "')";
+
+                                    command.ExecuteNonQuery();
+                                };
+                            }
+
+                            if (Mdet.Combos != null)
+                            {
+                                foreach (var MCom in Mdet.Combos)
+                                {
+                                    // Grabo combos
+                                    command.CommandText =
+                                    "Insert into En_MesaDet_Combos (NroMesa, IdDetalle,idSeccion, idPlato," +
+                                    "Cant,Procesado,IdTamanio,Obs,Cocinado,FechaHora,Comanda) " +
+                                    "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + MCom.idSeccion + "," +
+                                     MCom.idPlato + ", " + MCom.cant + ",'" + MCom.procesado + "'," + MCom.idTamanio +
+                                     ",'" + MCom.obs + "','" + MCom.cocinado + "','" + MCom.fechaHora + "','" +
+                                     MCom.comanda + "')";
+                    
+                                    command.ExecuteNonQuery();
+                                    if (MCom.CombosGustos != null)
+                                    {
+                                        foreach (var MComGust in MCom.CombosGustos)
+                                        {
+                                            // Grabo combos gustos
+                                            command.CommandText =
+                                            "Insert into En_MesaDet_Combos_Gustos (NroMesa, IdDetalle,idSeccion,idPlato,idGusto) " +
+                                            "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + MComGust.idSeccion +
+                                            "," + MComGust.idPlato + "," + MComGust.idGusto + ")";
+
+                                            command.ExecuteNonQuery();
+                                        };
+                                    }
+                                };
+                            }
+                           
+                        }
+                        transaction.Commit();
+                        return new JsonResult(new { res = 0, mensaje = "commit" });
+                    }
+                    catch (Exception ex)
+                    {
+                        //Console.WriteLine("Commit Exception Type: {0}", ex.GetType());
+                        //Console.WriteLine("  Message: {0}", ex.Message);
+
+                        // Attempt to roll back the transaction.
+                        try
+                        {
+                            transaction.Rollback();
+                            return new JsonResult(new { res = 1, mensaje = "rollback: "+ex.Message });
+                        }
+                        catch (Exception ex2)
+                        {
+                            // This catch block will handle any errors that may have occurred
+                            // on the server that would cause the rollback to fail, such as
+                            // a closed connection.
+                            //Console.WriteLine("Rollback Exception Type: {0}", ex2.GetType());
+                            //Console.WriteLine("  Message: {0}", ex2.Message);
+                            return new JsonResult(new { res = -1, mensaje = "error: "+ex2.Message });
+                        }
+                    }
+                }
+                return new JsonResult(new { res = 0, mensaje = "vacio" });
+            }
+
+            
+        }
     }
 }
