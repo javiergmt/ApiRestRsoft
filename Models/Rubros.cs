@@ -16,4 +16,14 @@
         public int Orden { get; set; }
         
     }
+
+    public class RubrosSub
+    {
+        public int IdRubro { get; set; }
+        public string? Descripcion { get; set; }
+        public int Orden { get; set; }
+        public char Visualizacion { get; set; }
+        public string? iconoApp { get; set; }
+        public List<Subrubros>? Subrubros { get; set; }
+    }
 }

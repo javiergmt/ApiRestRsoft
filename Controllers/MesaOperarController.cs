@@ -4,12 +4,16 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
 
 namespace ApiRestRs.Controllers
+
 {
     //[Route("[controller]")]
     [ApiController]
     public class MesaOperarController
     {
         public readonly string? con;
+
+        public object PrinterSettings { get; private set; }
+
         public MesaOperarController(IConfiguration configuration)
         {
             con = configuration.GetConnectionString("conexion") + " Password=6736";
@@ -423,5 +427,6 @@ namespace ApiRestRs.Controllers
 
             
         }
+
     }
 }

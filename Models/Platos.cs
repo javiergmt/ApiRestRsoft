@@ -12,6 +12,10 @@
         public int? cantgustos { get; set; }
         public string? codBarra { get; set; }
         public string? colorFondo { get; set; }
+        public int? tecla { get; set; }
+        public int? orden { get; set; }
+        public string? shortCut { get; set; }
+        public bool pedirCantAlCargar { get; set; }
     }
     public class PlatosGustos
     {

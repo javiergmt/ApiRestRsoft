@@ -47,7 +47,11 @@ namespace ApiRestRs.Controllers
                                 idSubRubro = Convert.ToInt32(reader["idSubRubro"]),
                                 cantgustos = reader["cantgustos"] as int? ?? 0,
                                 codBarra = reader["codBarra"].ToString(),
-                                colorFondo = reader["colorFondo"].ToString()
+                                colorFondo = reader["colorFondo"].ToString(),
+                                tecla = reader["tecla"] as int? ?? 0,
+                                orden = reader["orden"] as int? ?? 0,
+                                shortCut = reader["shortCut"].ToString(),
+                                pedirCantAlCargar = Convert.ToBoolean(reader["pedirCantAlCargar"])
 
 
                             };
