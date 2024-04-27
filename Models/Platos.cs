@@ -4,6 +4,7 @@
     {
         public int IdPlato { get; set; }
         public string? DescCorta { get; set; }
+        public string? Descripcion { get; set; }
         public decimal Precio { get; set; }
         public bool TamanioUnico { get; set; }
         public string? idTipoConsumo { get; set; }
@@ -36,7 +37,8 @@
     {
         public int IdPlato { get; set; }
         public decimal Precio { get; set; }
-       
+        public int IdSectorExp { get; set; }
+
     }
     public class PlatoEnMesa
     {

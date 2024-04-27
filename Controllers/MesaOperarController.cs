@@ -398,6 +398,7 @@ namespace ApiRestRs.Controllers
                            
                         }
                         transaction.Commit();
+                        Imprimir.ImprimirComanda( m , con);
                         return new JsonResult(new { res = 0, mensaje = "commit" });
                     }
                     catch (Exception ex)
@@ -428,5 +429,9 @@ namespace ApiRestRs.Controllers
             
         }
 
+        private void ImprimirComanda(EnMesaDetM enMesaDetM, EnMesaDetMult m)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

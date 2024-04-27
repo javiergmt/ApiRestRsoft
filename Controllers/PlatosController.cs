@@ -40,6 +40,7 @@ namespace ApiRestRs.Controllers
                             {
                                 IdPlato = Convert.ToInt32(reader["IdPlato"]),
                                 DescCorta = reader["DescCorta"].ToString(),
+                                Descripcion = reader["Descripcion"].ToString(),
                                 Precio = Convert.ToDecimal(reader["Precio"]),
                                 TamanioUnico = Convert.ToBoolean(reader["TamanioUnico"]),
                                 idTipoConsumo = reader["idTipoConsumo"].ToString(),
@@ -157,7 +158,8 @@ namespace ApiRestRs.Controllers
                             PlatoPrecio p = new PlatoPrecio
                             {
                                 IdPlato = Convert.ToInt32(reader["IdPlato"]),
-                                Precio = Convert.ToDecimal(reader["Precio"])
+                                Precio = Convert.ToDecimal(reader["Precio"]),
+                                IdSectorExp = Convert.ToInt32(reader["IdSectorExp"])
 
                             };
                             plato.Add(p);

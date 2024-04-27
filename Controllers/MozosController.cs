@@ -116,7 +116,7 @@ namespace ApiRestRs.Controllers
                 }
 
             }
-            Imprimir.ImprimirComanda();
+            //Imprimir.ImprimirComanda();
             return parammozos;
 
         }

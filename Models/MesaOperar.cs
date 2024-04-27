@@ -87,12 +87,14 @@
         public int idSeccion { get; set; }
         public int idPlato { get; set; }
         public int idGusto { get; set; }
+        public string? descripcion { get; set; }
     }
 
     public class EnMesaDetCombosM
     {
         public int idSeccion { get; set; }
         public int idPlato { get; set; }
+        public string? descripcion { get; set; }
         public decimal cant { get; set; }
         public bool procesado { get; set; }
         public int idTamanio { get; set; }
@@ -100,6 +102,7 @@
         public bool cocinado { get; set; }
         public DateTime fechaHora { get; set; }
         public bool comanda { get; set; }
+        public int idSectorExped { get; set; }
         public List<EnMesaDetCombosGustosM>? CombosGustos { get; set; }
     }
    
@@ -113,7 +116,9 @@
     {
         public int nroMesa { get; set; }
         public int idDetalle { get; set; }
+        
         public int idPlato { get; set; }
+        public string? idTipoConsumo { get; set; }
         public decimal cant { get; set; }
         public decimal pcioUnit { get; set; }
         public decimal importe { get; set; }
@@ -123,12 +128,14 @@
         public bool procesado { get; set; }
         public string? hora { get; set; }
         public int idMozo { get; set; }
+        public string? nombreMozo { get; set; }
         public int idUsuario { get; set; }
         public bool cocinado { get; set; }
         public bool esEntrada { get; set; }
         public string? descripcion { get; set; }
         public DateTime fechaHora { get; set; }
         public bool comanda { get; set; }
+        public int idSectorExped { get; set; }
         public List<EnMesaDetGustosM>? Gustos { get; set; }
         public List<EnMesaDetCombosM>? Combos { get; set; }
     }
