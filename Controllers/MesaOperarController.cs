@@ -199,7 +199,7 @@ namespace ApiRestRs.Controllers
                     cmd.Parameters.AddWithValue("@NroMesa", m.nroMesa);
                     cmd.Parameters.AddWithValue("@idDetalle", m.idDetalle);
                     cmd.Parameters.AddWithValue("@idSeccion", m.idSeccion);
-                    cmd.Parameters.AddWithValue("@idPlato", m.idPlato);
+                    cmd.Parameters.AddWithValue("@idPlato", m.idPlato);                    
                     cmd.Parameters.AddWithValue("@cant", m.cant);
                     cmd.Parameters.AddWithValue("@procesado", m.procesado);
                     cmd.Parameters.AddWithValue("@idTamanio", m.idTamanio);

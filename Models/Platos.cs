@@ -5,7 +5,7 @@
         public int IdPlato { get; set; }
         public string? DescCorta { get; set; }
         public string? Descripcion { get; set; }
-        public decimal Precio { get; set; }
+        public decimal pcioUnit { get; set; }
         public bool TamanioUnico { get; set; }
         public string? idTipoConsumo { get; set; }
         public int? idRubro { get; set; }
@@ -36,7 +36,7 @@
     public class PlatoPrecio
     {
         public int IdPlato { get; set; }
-        public decimal Precio { get; set; }
+        public decimal pcioUnit { get; set; }
         public int IdSectorExp { get; set; }
 
     }

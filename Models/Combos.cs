@@ -21,6 +21,7 @@
     {
         public int idSeccion { get; set; }
         public int idPlato { get; set; }
+        public string? descripcion { get; set; }
         public int idTamanio { get; set; }
         public string? descCorta { get; set; }
         public string? idTipoConsumo { get; set; }

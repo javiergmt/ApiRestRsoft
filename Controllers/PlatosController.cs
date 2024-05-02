@@ -41,7 +41,7 @@ namespace ApiRestRs.Controllers
                                 IdPlato = Convert.ToInt32(reader["IdPlato"]),
                                 DescCorta = reader["DescCorta"].ToString(),
                                 Descripcion = reader["Descripcion"].ToString(),
-                                Precio = Convert.ToDecimal(reader["Precio"]),
+                                pcioUnit = Convert.ToDecimal(reader["Precio"]),
                                 TamanioUnico = Convert.ToBoolean(reader["TamanioUnico"]),
                                 idTipoConsumo = reader["idTipoConsumo"].ToString(),
                                 idRubro = Convert.ToInt32(reader["idRubro"]),
@@ -158,7 +158,7 @@ namespace ApiRestRs.Controllers
                             PlatoPrecio p = new PlatoPrecio
                             {
                                 IdPlato = Convert.ToInt32(reader["IdPlato"]),
-                                Precio = Convert.ToDecimal(reader["Precio"]),
+                                pcioUnit = Convert.ToDecimal(reader["Precio"]),
                                 IdSectorExp = Convert.ToInt32(reader["IdSectorExp"])
 
                             };
@@ -281,6 +281,7 @@ namespace ApiRestRs.Controllers
                                 idPlato = Convert.ToInt32(reader["idPlato"]),
                                 idTamanio = Convert.ToInt32(reader["IdTamanio"]),
                                 descCorta = reader["DescCorta"].ToString(),
+                                descripcion = reader["Descripcion"].ToString(),
                                 idTipoConsumo = reader["idTipoConsumo"].ToString(),
                                 cantGustos = Convert.ToInt32(reader["CantGustos"]),
                                 tamanio = reader["Tamanio"].ToString()
