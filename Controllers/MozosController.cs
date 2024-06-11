@@ -121,6 +121,39 @@ namespace ApiRestRs.Controllers
 
         }
 
+        [HttpGet("{id}")]
+        [ActionName("disp_valido")]
+        [EnableCors("MyCors")]
+
+        public IEnumerable<Disp> Disp(string id)
+        {
+            List<Disp> disp = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_Disp_Valido", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@id", id);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Disp d = new Disp
+                            {
+                                valido = Convert.ToInt32(reader["valido"])
+                            };
+                            disp.Add(d);
+
+                        }
+                    }
+                }
+
+            }
+            return disp;
+
+        }
+
         [HttpGet("{cadena}")]
         [ActionName("st_procs")]
         [EnableCors("MyCors")]

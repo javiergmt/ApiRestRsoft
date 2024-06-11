@@ -159,7 +159,7 @@ namespace ApiRestRs.Controllers
                             {
                                 IdPlato = Convert.ToInt32(reader["IdPlato"]),
                                 pcioUnit = Convert.ToDecimal(reader["Precio"]),
-                                IdSectorExp = Convert.ToInt32(reader["IdSectorExp"])
+                                IdSectorExped = Convert.ToInt32(reader["IdSectorExp"])
 
                             };
                             plato.Add(p);

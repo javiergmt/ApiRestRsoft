@@ -160,6 +160,35 @@ namespace ApiRestRs.Controllers
 
         }
 
+        [HttpPost]
+        [Route("actIconoRubro")]
+        [EnableCors("MyCors")]
+        public ActionResult Post([FromBody] ActIconoRubro r)
+        {
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spP_ActIconoRubro", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@idRubro", r.IdRubro);
+                    cmd.Parameters.AddWithValue("@iconoApp", r.iconoApp);
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        return new JsonResult(new { res = "OK", rubro = r.IdRubro });
+                    }
+                    catch (Exception ex)
+                    {
+                        return new JsonResult(new { res = ex });
+                    }
+
+
+                }
+            }
+        }
+
 
     }
 }

@@ -37,7 +37,7 @@
     {
         public int IdPlato { get; set; }
         public decimal pcioUnit { get; set; }
-        public int IdSectorExp { get; set; }
+        public int IdSectorExped { get; set; }
 
     }
     public class PlatoEnMesa

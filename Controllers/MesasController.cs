@@ -282,5 +282,41 @@ namespace ApiRestRs.Controllers
             return mesadet;
 
         }
+
+        [HttpGet("")]
+        [ActionName("lugSectImpre")]
+        [EnableCors("MyCors")]
+        public IEnumerable<LugSectImpre> LugSectImpre()
+        {
+            List<LugSectImpre> lugSect = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_LugSectImpre", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                   
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            LugSectImpre s = new LugSectImpre
+                            {
+                                idLugarExped = Convert.ToInt32(reader["idLugarExped"]),
+                                idSectorExped = Convert.ToInt32(reader["idSectorExped"]),
+                                idImpresora = Convert.ToInt32(reader["idImpresora"]),
+                                descripcion = reader["descripcion"].ToString()
+
+                            };  
+                           
+                            lugSect.Add(s);
+
+                        }
+                    }
+                }
+
+            }
+            return lugSect;
+        }
     }
 }

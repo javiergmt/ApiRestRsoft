@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
+using System.Drawing;
 
 namespace ApiRestRs.Controllers
 
@@ -433,5 +434,41 @@ namespace ApiRestRs.Controllers
         {
             throw new NotImplementedException();
         }
+
+        [HttpPost]
+        [Route("grabaMensaje")]
+        [EnableCors("MyCors")]
+        public ActionResult Post([FromBody] MensXcomanda m)
+        {
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spP_GrabaMensaje", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@descripcion", m.descripcion);
+                    cmd.Parameters.AddWithValue("@idMozo", m.idMozo);
+                    cmd.Parameters.AddWithValue("@idUsuario", m.idUsuario);
+                    cmd.Parameters.AddWithValue("@nroMesa", m.nroMesa);
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        // Imprimir.ImprimirMensaje(m.idSectorExped, m.idImpresora,m.descripcion,con);
+                        return new JsonResult(new { res = "OK" });
+                    }
+                    catch (Exception ex)
+                    {
+                        return new JsonResult(new { res = ex });
+                    }
+
+
+                }
+            }
+        }
+
     }
+
+    
+
 }

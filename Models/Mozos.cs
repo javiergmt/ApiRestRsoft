@@ -53,4 +53,9 @@
         public string? nombre { get; set; }
         public string? definicion { get; set; }
     }
+    public class Disp
+    {
+        public int valido { get; set; }
+        
+    }
 }
