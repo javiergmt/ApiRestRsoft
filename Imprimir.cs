@@ -8,6 +8,7 @@ using System.Linq;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Reflection;
+using System.Drawing.Printing;
 
 namespace ApiRestRs
 
@@ -21,6 +22,23 @@ namespace ApiRestRs
             
         public static void ImprimirComanda(EnMesaDetMult? m , string? con)
         {
+            
+            SqlConnection conPar = new(con);
+            SqlDataReader dataParamCom;
+            string sqlParamCom = "Select * From Parametros_Comandas";
+            conPar.Open();
+            SqlCommand cmdParamCom = new SqlCommand(sqlParamCom, conPar);
+            dataParamCom = cmdParamCom.ExecuteReader();
+            dataParamCom.Read();    
+            if (dataParamCom["imprimeComandas"].ToString() == "N")
+            {
+               return;
+            }
+
+            var Delim1 = dataParamCom["DelimitadorEntrada1"].ToString();
+            var Delim2 = dataParamCom["DelimitadorEntrada2"].ToString();
+            var Delim3 = dataParamCom["DelimitadorEntrada3"].ToString();
+
             SqlConnection connection = new(con);
             SqlDataReader dataReader;
             string sql = "Select idSectorExped,S.Descripcion,combinacomandas, I.* from sectores_exped S inner join Impresoras I on S.idImpresora = I.idImpresora";
@@ -32,6 +50,7 @@ namespace ApiRestRs
                 // Obtengo todos los sectores los recorro y los aplico al filtro
                 // Select idLugarEsprd, idSectorExped,S.Descripcion,combinacomandas, I.* from sectores_expedicion S inner join Impresora I on S.idImpresora = I.idImpresora
                 int idSectorExped = Convert.ToInt32(dataReader["idSectorExped"]);
+                int combinaComandas = Convert.ToInt32(dataReader["combinacomandas"]);
                 string iP = dataReader["iP"].ToString();
                 int cantSaltos = Convert.ToInt32(dataReader["cantSaltos"]);
                 int cantSaltosCut = Convert.ToInt32(dataReader["cantSaltosCut"]);
@@ -48,21 +67,26 @@ namespace ApiRestRs
                 //string ubicacion = string.Format("\\\\{0}\\{1}", hostName, impresora);
 
                 // Uso este filtro para obtnener los platos de un mismo lugar y sector , mas los combos
-                //var detalle = m.MesaDetM.Where(md => md.idSectorExped = idSectorExped).Where(md => md.idSectorExped = 0 );
-                // if (detalle.Count() > 0)
-               
+
+                #region Linq Deffered Query  
+                var entradas = from md in m.MesaDetM
+                              where (md.idSectorExped == idSectorExped && md.esEntrada)
+                              select md;
+                #endregion
+
                 #region Linq Deffered Query  
                 var detalle = from md in m.MesaDetM
-                             where md.idSectorExped == idSectorExped || md.idTipoConsumo == "CB"
-                           
-                             select md;
+                              where ( md.idSectorExped == idSectorExped || md.idTipoConsumo == "CB" )
+                              && ( !md.esEntrada )                                                         
+                              select md;
                 #endregion
 
 
-                if ( detalle.Count() > 0 )
+                if ( detalle.Count() > 0 || entradas.Count() > 0)
                     {
-                    var titulo = false; 
-                    
+
+                    var titulo = false;
+                    var hayEntradas = entradas.Count() > 0;
                     SafeFileHandle fileHandle = CreateFile(iP, FileAccess.Write, 0, IntPtr.Zero, FileMode.OpenOrCreate, 0, IntPtr.Zero);
                     if (fileHandle.IsInvalid)
                     {
@@ -70,12 +94,51 @@ namespace ApiRestRs
                     }
                     using (FileStream fs = new(fileHandle, FileAccess.Write))
                     {
-                        
+                        // Recorro las entradas
+                        foreach (var ent in entradas)
+                        {
+                            if (!titulo)
+                            {
+                                titulo = true;
+                                Inicializar(fs);
+                                ImprimirTitulo(fs, margin, dataReader["Descripcion"].ToString(), ent.nroMesa.ToString(),
+                                               ent.idMozo.ToString(), ent.nombreMozo, 1, ent.fechaHora);
+
+                            }
+                            ImprimirTexto(fs, margin + ent.cant.ToString() + ' ' + ent.descripcion);
+                            if (ent.obs != null && ent.obs != "")
+                            {
+                                ImprimirTexto(fs, margin + "   " + ent.obs);
+                            }
+                            if (ent.idTamanio != 0)
+                            {
+                                ImprimirTexto(fs, margin + "   " + ent.tamanio);
+                            }
+                            if (ent.Gustos != null)
+                            {
+                                foreach (var gusto in ent.Gustos)
+                                {
+                                    ImprimirTexto(fs, margin + "   " + gusto.descripcion);
+                                }
+                            }   
+                        }
+
+                        if( hayEntradas)
+                        {
+                            Letra_Normal_Normal(fs);
+                            ImprimirTexto(fs, margin + Delim1);
+                            ImprimirTexto(fs, margin + Delim2);
+                            ImprimirTexto(fs, margin + Delim3);
+                            Letra_Doble_Alto(fs);
+                        }
+
+                        // Recorro los platos
 
                         foreach (var reng in detalle)
                         {
                             if (reng.Combos != null)
                             {
+                                // Impresion de Combos
                                 foreach (var comb in reng.Combos)
                                 {
                                     if( comb.idSectorExped == idSectorExped)
@@ -84,14 +147,9 @@ namespace ApiRestRs
                                         {
                                             titulo = true;
                                             Inicializar(fs);
-                                            Letra_Doble_Alto(fs);
-                                            ImprimirTexto(fs,margin + "########## INICIO ##########");
+                                            ImprimirTitulo(fs, margin, dataReader["Descripcion"].ToString(), reng.nroMesa.ToString(),
+                                                            reng.idMozo.ToString(), reng.nombreMozo, 1, reng.fechaHora);
 
-                                            ImprimirTexto(fs, margin + "Sector: " + dataReader["Descripcion"].ToString());
-                                            ImprimirTexto(fs, margin + "Mesa: " + reng.nroMesa.ToString());
-                                            ImprimirTexto(fs, margin + "Mozo: (" + reng.idMozo.ToString()+") "+reng.nombreMozo);
-                                            ImprimirTexto(fs, margin + reng.fechaHora.ToShortDateString() + ' ' + reng.fechaHora.ToShortTimeString());
-                                            ImprimirTexto(fs, margin + "----------------------------");
                                         }
 
                                         
@@ -108,24 +166,24 @@ namespace ApiRestRs
                             }
                             else
                             {
+                                // Impresion de Platos
                                 if (!titulo)
                                 {
                                     titulo = true;
                                     Inicializar(fs);
-                                    Letra_Doble_Alto(fs);
-                                    ImprimirTexto(fs, margin + "########## INICIO ##########");
-                              
-                                    ImprimirTexto(fs, margin + "Sector: " + dataReader["Descripcion"].ToString());
-                                    ImprimirTexto(fs, margin + "Mesa: " + reng.nroMesa.ToString());
-                                    ImprimirTexto(fs, margin + "Mozo: (" + reng.idMozo.ToString() + ") " + reng.nombreMozo);
-                                    ImprimirTexto(fs, margin + reng.fechaHora.ToShortDateString() + ' ' + reng.fechaHora.ToShortTimeString());
-                                    ImprimirTexto(fs, margin + "----------------------------");
+                                    ImprimirTitulo(fs, margin, dataReader["Descripcion"].ToString(), reng.nroMesa.ToString(),
+                                       reng.idMozo.ToString(), reng.nombreMozo, 1 , reng.fechaHora);
+                                    
                                 }
                               
                                 ImprimirTexto(fs, margin + reng.cant.ToString() + ' ' + reng.descripcion);
+                                if (reng.obs != null && reng.obs != "") 
+                                {
+                                    ImprimirTexto(fs, margin + "   " + reng.obs);
+                                }
                                 if (reng.idTamanio != 0)
                                 {
-                                    ImprimirTexto(fs, margin + "   " + reng.tamanio);
+                                    ImprimirTexto(fs, margin + "   " + reng.tamanio);                                    
                                 }
                                 if (reng.Gustos != null)
                                 {
@@ -140,14 +198,61 @@ namespace ApiRestRs
                         }
                         if (titulo)
                         {
-                            ImprimirTexto(fs, margin + "----------------------------");
+                            Letra_Normal_Normal(fs);
+                            ImprimirTexto(fs, margin + "--------------------------------------------------");
+
+
+                            // Impresion de Combinaciones para el sector idSectorExped
+                            // Busco los platos de otros sectores que tienen Combinacion y son distintos a idSectorExped
+                            if (combinaComandas == 1)
+                            {
+
+                                #region Linq Deffered Query  
+                                var combina = from cb in m.MesaDetM
+                                              where (cb.idSectorExped != idSectorExped)
+                                              select cb;
+                                #endregion
+                                string[] sectComb = [];
+                                
+                                foreach (var comb in combina)
+                                {
+                                   
+                                    var sect = comb.idSectorExped;
+                                    SqlConnection conSec = new(con);
+                                    SqlDataReader dataSec;
+                                    string sqlSec = "Select * From Sectores_Exped where idSectorExped = " + sect;
+                                    conSec.Open();
+                                    SqlCommand cmdSec = new SqlCommand(sqlSec, conSec);
+                                    dataSec = cmdSec.ExecuteReader();
+                                    dataSec.Read();
+                                    if (Convert.ToInt32(dataSec["combinacomandas"]) == 1)
+                                    {
+                                        var descripcion = dataSec["Descripcion"].ToString();
+                                        int indice = Array.IndexOf(sectComb, descripcion);
+                                        if ( indice == -1 )
+                                        {
+                                            Array.Resize(ref sectComb, sectComb.Length + 1);
+                                            sectComb[sectComb.Length - 1] = descripcion;
+                                        }
+                                        
+                                    }
+                                };
+                                
+                                for (int i = 0; i < sectComb.Length; i++)
+                                {
+                                    Letra_Normal_Normal(fs);
+                                    ImprimirTexto(fs, margin + "Combina con: " + sectComb[i]);
+                                }
+                                    
+                                
+                            }
                             SaltarLinea(fs, "1");
-                            ImprimirTexto(fs, margin + "########## FIN ##########");
+                            Letra_Normal_Normal(fs);
+                            ImprimirTexto(fs, margin + "     " + "####################### FIN ####################");
                             SaltarLinea(fs, cantSaltosCut.ToString());
                             Corte_Papel(fs);
-
-
                         }
+
                         fs.Dispose();
 
                     }
@@ -156,6 +261,22 @@ namespace ApiRestRs
             connection.Close();
         }
 
+        public static void ImprimirTitulo(FileStream fs,string margin,string sector, string nroMesa,
+            string nroMozo, string nombMozo, int comensales, DateTime fechaHora)
+
+        {
+            Letra_Normal_Normal(fs);
+            ImprimirTexto(fs, margin + "     " + "################### INICIO ###################");
+            Letra_Doble_Alto(fs);
+            ImprimirTexto(fs, margin + "          " + "Sector: " + sector);
+            ImprimirTexto(fs,"");
+            ImprimirTexto(fs, margin + "Mesa: " + nroMesa);
+            ImprimirTexto(fs, margin + "Mozo: (" + nroMozo + ") " + nombMozo);
+            ImprimirTexto(fs, margin + fechaHora.ToShortDateString() + ' ' + fechaHora.ToShortTimeString());
+            Letra_Normal_Normal(fs);
+            ImprimirTexto(fs, margin + "--------------------------------------------------");
+            Letra_Doble_Alto(fs);
+        }
         public static void Inicializar(FileStream fs)
         {
             fs.WriteByte(0x1b); // ESC

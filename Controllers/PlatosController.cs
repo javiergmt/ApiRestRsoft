@@ -284,7 +284,8 @@ namespace ApiRestRs.Controllers
                                 descripcion = reader["Descripcion"].ToString(),
                                 idTipoConsumo = reader["idTipoConsumo"].ToString(),
                                 cantGustos = Convert.ToInt32(reader["CantGustos"]),
-                                tamanio = reader["Tamanio"].ToString()
+                                tamanio = reader["Tamanio"].ToString(),
+                                idSectorExped = Convert.ToInt32(reader["IdSectorExped"])
                             };
                             combo.Add(p);
 
@@ -395,6 +396,7 @@ namespace ApiRestRs.Controllers
                         {
                             PlatoInfoGustos p = new PlatoInfoGustos
                             {
+                                idGusto = Convert.ToInt32(reader["idGusto"]),
                                 descripcion = reader["Descripcion"].ToString()
                             };
                             plato.Add(p);
@@ -431,7 +433,11 @@ namespace ApiRestRs.Controllers
                             {
                                 idPlato = Convert.ToInt32(reader["idPlato"]),
                                 cant = Convert.ToDecimal(reader["Cant"]),
-                                descripcion = reader["Descripcion"].ToString()
+                                descripcion = reader["Descripcion"].ToString(),
+                                idSeccion = Convert.ToInt32(reader["idSeccion"]),
+                                idTamanio = Convert.ToInt32(reader["IdTamanio"]),
+                                cantGustos = Convert.ToInt32(reader["CantGustos"]),
+                                idTipoConsumo = reader["idTipoConsumo"].ToString()
                             };
                             plato.Add(p);
 
@@ -442,6 +448,44 @@ namespace ApiRestRs.Controllers
             }
             return plato;
 
+
+        }
+
+        [HttpGet("{nroMesa}/{idDetalle}")]
+        [ActionName("plato_info_combo_gustos")]
+        [EnableCors("MyCors")]
+        public IEnumerable<PlatoInfoComboGustos> PlatoInfoComboGustos(int nroMesa, int idDetalle)
+        {
+            List<PlatoInfoComboGustos> plato = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_PlatoInfoComboGustos", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@nroMesa", nroMesa);
+                    cmd.Parameters.AddWithValue("@idDetalle", idDetalle);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            PlatoInfoComboGustos p = new PlatoInfoComboGustos
+                            {
+                                idPlato = Convert.ToInt32(reader["idPlato"]),
+                                descGusto = reader["DescGusto"].ToString(),
+                                idSeccion = Convert.ToInt32(reader["idSeccion"]),
+                                idGusto = Convert.ToInt32(reader["IdGusto"])
+
+                            };
+                            plato.Add(p);
+
+                        }
+                    }
+                }
+
+            }
+            return plato;
         }
     }
 

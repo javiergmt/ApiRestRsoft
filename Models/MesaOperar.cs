@@ -58,6 +58,19 @@
     {
         public int nroMesa { get; set; }
         
+    }
+
+    public class MesaCerrar
+    {
+        public int nroMesa { get; set; }
+
+    }
+    public class MesaRenglonBorrar
+    {
+        public int nroMesa { get; set; }
+        public int idDetalle { get; set; }
+        public int idPlato { get; set; }
+        public string? idTipoConsumo { get; set; }
 
     }
     public class EnMesaDetCombos
@@ -115,8 +128,7 @@
     public class EnMesaDetM
     {
         public int nroMesa { get; set; }
-        public int idDetalle { get; set; }
-        
+        public int idDetalle { get; set; }        
         public int idPlato { get; set; }
         public string? idTipoConsumo { get; set; }
         public decimal cant { get; set; }
@@ -144,6 +156,13 @@
     {
         public List<EnMesaDetM>? MesaDetM { get; set; }
 
+    }
+
+    public class EnMesaDetRenglon
+    {
+        public int nroMesa { get; set; }
+        public int idDetalle { get; set; }
+        public decimal cant { get; set; }
     }
 }
 

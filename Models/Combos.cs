@@ -27,5 +27,6 @@
         public string? idTipoConsumo { get; set; }
         public int cantGustos { get; set; }
         public string? tamanio { get; set; }
+        public int idSectorExped { get; set; }
     }
 }

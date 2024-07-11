@@ -313,6 +313,37 @@ namespace ApiRestRs.Controllers
             }
         }
 
+        [HttpDelete]
+        [Route("mesa_renglon_borrar")]
+        [EnableCors("MyCors")]
+        public ActionResult Delete([FromBody] MesaRenglonBorrar m)
+        {
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spD_MesaRenglon", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@nroMesa", m.nroMesa);
+                    cmd.Parameters.AddWithValue("@idDetalle", m.idDetalle);
+                    cmd.Parameters.AddWithValue("@idPlato", m.idPlato);
+                    cmd.Parameters.AddWithValue("@idTipoConsumo", m.idTipoConsumo);
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        return new JsonResult(new { res = "OK", mesa = m.nroMesa });
+                    }
+                    catch (Exception ex)
+                    {
+                        return new JsonResult(new { res = ex });
+                    }
+
+
+                }
+            }
+        }
+
 
         [HttpPost]
         [Route("mesa_det_mult")]
@@ -341,15 +372,35 @@ namespace ApiRestRs.Controllers
 
                         foreach (var Mdet in m.MesaDetM)
                         {
+                            command.Parameters.Clear();
+
                             // Grabo detalle
                             command.CommandText =
-                            "Insert into En_MesaDet (NroMesa, IdDetalle,idPlato,Cant,PcioUnit,Importe,Obs,idTamanio," +
-                            "Tamanio, Procesado, Hora, idMozo, idUsuario, Cocinado, EsEntrada, Descripcion," +
-                            "FechaHora, Comanda) " +
-                            "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + Mdet.idPlato + "," + Mdet.cant + "," + Mdet.pcioUnit +
-                            "," + Mdet.importe + ",'" + Mdet.obs + "'," + Mdet.idTamanio + ",'" + Mdet.tamanio + "','" + Mdet.procesado +
-                            "','" + Mdet.hora + "'," + Mdet.idMozo + "," + Mdet.idUsuario + ",'" + Mdet.cocinado + "','" + Mdet.esEntrada +
-                            "','" + Mdet.descripcion + "','" + Mdet.fechaHora + "','" + Mdet.comanda + "')";
+                            "Insert into En_MesaDet (nroMesa, idDetalle,idPlato,cant,pcioUnit,importe,obs,idTamanio," +
+                            "tamanio, procesado, hora, idMozo, idUsuario, cocinado, esEntrada, descripcion," +
+                            "fechaHora, comanda) " +
+                            " VALUES(@nroMesa, @idDetalle, @idPlato, @cant, @pcioUnit, @importe, @obs, @idTamanio, " +
+                            "@tamanio, @procesado, @hora, @idMozo, @idUsuario, @cocinado, @esEntrada, @descripcion," +
+                            "@fechaHora, @comanda) ";
+                            
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@nroMesa", Value = Mdet.nroMesa });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idDetalle", Value = Mdet.idDetalle });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idPlato", Value = Mdet.idPlato });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@cant", Value = Mdet.cant });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@pcioUnit", Value = Mdet.pcioUnit });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@importe", Value = Mdet.importe });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@obs", Value = Mdet.obs });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idTamanio", Value = Mdet.idTamanio });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@tamanio", Value = Mdet.tamanio });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@procesado", Value = Mdet.procesado });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@hora", Value = Mdet.hora });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idMozo", Value = Mdet.idMozo });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idUsuario", Value = Mdet.idUsuario });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@cocinado", Value = Mdet.cocinado });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@esEntrada", Value = Mdet.esEntrada });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@descripcion", Value = Mdet.descripcion });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@fechaHora", Value = Mdet.fechaHora });
+                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@comanda", Value = Mdet.comanda });
 
                             command.ExecuteNonQuery();
 
@@ -467,8 +518,97 @@ namespace ApiRestRs.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("actIconoRubro")]
+        [EnableCors("MyCors")]
+        public ActionResult Post([FromBody] ActIconoRubro r)
+        {
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spP_ActIconoRubro", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@idRubro", r.IdRubro);
+                    cmd.Parameters.AddWithValue("@iconoApp", r.iconoApp);
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        return new JsonResult(new { res = "OK", rubro = r.IdRubro });
+                    }
+                    catch (Exception ex)
+                    {
+                        return new JsonResult(new { res = ex });
+                    }
+
+
+                }
+            }
+        }
+
+
+        [HttpPost]
+        [Route("mesa_cerrar")]
+        [EnableCors("MyCors")]
+        public ActionResult Post([FromBody] MesaCerrar m)
+        {
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spP_MesaCerrar", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@nroMesa", m.nroMesa);
+                    
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        return new JsonResult(new { res = "OK", mesa = m.nroMesa });
+                    }
+                    catch (Exception ex)
+                    {
+                        return new JsonResult(new { res = ex });
+                    }
+
+
+                }
+            }
+        }
+
+        [HttpPost]
+        [Route("mesa_renglon_cambiar")]
+        [EnableCors("MyCors")]
+        public ActionResult Post([FromBody] EnMesaDetRenglon m)
+        {
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spP_MesaRenglonCambiar", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@nroMesa", m.nroMesa);
+                    cmd.Parameters.AddWithValue("@idDetalle", m.idDetalle);
+                    cmd.Parameters.AddWithValue("@cant", m.cant);
+
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        return new JsonResult(new { res = "OK", mesa = m.nroMesa });
+                    }
+                    catch (Exception ex)
+                    {
+                        return new JsonResult(new { res = ex });
+                    }
+
+
+                }
+            }
+        }
     }
 
-    
+
 
 }
