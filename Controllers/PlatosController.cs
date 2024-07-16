@@ -487,6 +487,39 @@ namespace ApiRestRs.Controllers
             }
             return plato;
         }
+
+        [HttpGet("")]
+        [ActionName("obsrenglones")]
+        [EnableCors("MyCors")]
+        public IEnumerable<ObsRenglones> ObsRenglones()
+        {
+            List<ObsRenglones> obs = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_ObsRenglones", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ObsRenglones o = new ObsRenglones
+                            {
+                                idObs = Convert.ToInt32(reader["idObs"]),
+                                descripcion = reader["Descripcion"].ToString(),
+                                
+                            };
+                            obs.Add(o);
+
+                        }
+                    }
+                }
+
+            }
+            return obs;
+        }
     }
 
 }

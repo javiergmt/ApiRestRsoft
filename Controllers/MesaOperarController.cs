@@ -328,7 +328,24 @@ namespace ApiRestRs.Controllers
                     cmd.Parameters.AddWithValue("@idDetalle", m.idDetalle);
                     cmd.Parameters.AddWithValue("@idPlato", m.idPlato);
                     cmd.Parameters.AddWithValue("@idTipoConsumo", m.idTipoConsumo);
-
+                    cmd.Parameters.AddWithValue("@cant", m.cant);
+                    cmd.Parameters.AddWithValue("@descripcion", m.descripcion);
+                    cmd.Parameters.AddWithValue("@pcioUnit", m.pcioUnit);
+                    cmd.Parameters.AddWithValue("@obs", m.obs);
+                    cmd.Parameters.AddWithValue("@idTamanio", m.idTamanio);
+                    cmd.Parameters.AddWithValue("@tamanio", m.tamanio);
+                    cmd.Parameters.AddWithValue("@fecha", m.fecha);
+                    cmd.Parameters.AddWithValue("@hora", m.hora);
+                    cmd.Parameters.AddWithValue("@idMozo", m.idMozo);
+                    cmd.Parameters.AddWithValue("@idUsuario", m.idUsuario);
+                    cmd.Parameters.AddWithValue("@fechaHoraElim", m.fechaHoraElim);
+                    cmd.Parameters.AddWithValue("@idUsuarioElim", m.idUsuarioElim);
+                    cmd.Parameters.AddWithValue("@iMozoElim", m.idMozoElim);
+                    cmd.Parameters.AddWithValue("@idObs", m.idObs);
+                    cmd.Parameters.AddWithValue("@observacion", m.observacion);
+                    cmd.Parameters.AddWithValue("@comentario", m.comentario);
+                    cmd.Parameters.AddWithValue("@puntoDeVenta", m.puntoDeVenta);
+                    
                     try
                     {
                         cmd.ExecuteNonQuery();

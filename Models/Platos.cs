@@ -98,4 +98,10 @@
         public int idGusto { get; set; }
 
     }
+    public class ObsRenglones
+    {
+        public int idObs { get; set; }
+        public string? descripcion { get; set; }
+        
+    }
 }

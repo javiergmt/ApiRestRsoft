@@ -61,6 +61,45 @@ namespace ApiRestRs.Controllers
         }
 
         [HttpGet("")]
+        //[Route("mozos_pass")]
+        [ActionName("usuarios")]
+        [EnableCors("MyCors")]
+
+        public IEnumerable<Usuarios> Usuarios()
+        {
+            List<Usuarios> usuarios = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_Usuarios", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Usuarios u = new Usuarios
+                            {
+                                idUsuario = Convert.ToInt32(reader["IdUsuario"]),
+                                nombre = reader["Nombre"].ToString(),
+                                alias = reader["Alias"].ToString(),
+                                password = reader["Password"].ToString(),
+                                idGrupo = Convert.ToInt32(reader["IdGrupo"]),
+                                
+                            };
+                            usuarios.Add(u);
+
+                        }
+                    }
+                }
+
+            }
+            return usuarios;
+
+        }
+
+        [HttpGet("")]
         [ActionName("param_mozos")]
         [EnableCors("MyCors")]
         //[Route("param_mozos")]

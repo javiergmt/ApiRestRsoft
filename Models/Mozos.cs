@@ -58,4 +58,15 @@
         public int valido { get; set; }
         
     }
+
+    public class Usuarios
+    {
+        public int idUsuario { get; set; }
+        public string? nombre { get; set; }
+        public string? alias { get; set; }
+        public string? password { get; set; }
+        public int idGrupo { get; set; }
+        
+
+    }
 }

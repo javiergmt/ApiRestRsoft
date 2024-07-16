@@ -1,4 +1,7 @@
-﻿namespace ApiRestRs.Models
+﻿using Microsoft.AspNetCore.Identity;
+using System.Data;
+
+namespace ApiRestRs.Models
 {
     public class MesaOperar
     {
@@ -71,6 +74,28 @@
         public int idDetalle { get; set; }
         public int idPlato { get; set; }
         public string? idTipoConsumo { get; set; }
+        public int cant { get; set; }
+        public string? descripcion { get; set; }
+        public decimal pcioUnit { get; set; }
+        public string? obs { get; set; }
+        public int idTamanio { get; set; }
+        public string? tamanio { get; set; }
+        public DateTime fecha { get; set; }
+        public string? hora { get; set; }
+        public int idMozo { get; set; }
+        public int idUsuario { get; set; }
+        public DateTime fechaHoraElim { get; set; }
+        public int idUsuarioElim { get; set; }
+        public int idMozoElim { get; set; }
+        public int idObs { get; set; }
+        public string? observacion { get; set; }
+        public string? comentario { get; set; }
+        public int puntoDeVenta { get; set; }
+
+
+
+
+
 
     }
     public class EnMesaDetCombos
