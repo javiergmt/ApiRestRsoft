@@ -66,7 +66,22 @@ namespace ApiRestRs.Models
     public class MesaCerrar
     {
         public int nroMesa { get; set; }
-
+        public decimal pagos { get; set; }
+        public int descTipo { get; set; }
+        public decimal descImporte { get; set; }
+        public int idCliente { get; set; }
+        public string? nombre { get; set; }
+        public string? direccion { get; set; }
+        public string? localidad { get; set; }
+        public string? telefono { get; set; }
+        public string? telefono2 { get; set; }
+        public string? telefono3 { get; set; }
+        public string? email { get; set; }
+        public int idZona { get; set; }
+        public DateTime fechaNac { get; set; }
+        public string? cuit { get; set; }
+        public string? idIva { get; set; }
+        public string? tarjeta { get; set; }
     }
     public class MesaRenglonBorrar
     {
@@ -74,7 +89,7 @@ namespace ApiRestRs.Models
         public int idDetalle { get; set; }
         public int idPlato { get; set; }
         public string? idTipoConsumo { get; set; }
-        public int cant { get; set; }
+        public decimal cant { get; set; }
         public string? descripcion { get; set; }
         public decimal pcioUnit { get; set; }
         public string? obs { get; set; }

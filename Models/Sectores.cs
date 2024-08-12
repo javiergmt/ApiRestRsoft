@@ -18,12 +18,13 @@
 
     public class MensXcomanda
     {
-        public string? descripcion { get; set; }
-        public int? idMozo { get; set; }
-        public int? idUsuario { get; set; }
-        public int? nroMesa { get; set; }
-        public int? idSectorExped { get; set; }
-        public int? idImpresora { get; set; }
+        public string descripcion { get; set; }
+        public int idMozo { get; set; }        
+        public int idUsuario { get; set; }
+        public string? nombre { get; set; }
+        public int nroMesa { get; set; }
+        public int idSectorExped { get; set; }
+        public int idImpresora { get; set; }
 
 
     }

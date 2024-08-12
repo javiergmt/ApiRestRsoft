@@ -283,6 +283,40 @@ namespace ApiRestRs.Controllers
 
         }
 
+        [HttpGet("{nromesa}")]
+        [ActionName("mesa_pagos")]
+        [EnableCors("MyCors")]
+        public IEnumerable<MesaPagos> MesaPagos(int nromesa)
+        {
+            List<MesaPagos> mesapagos = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_MesaPagos", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@nroMesa", nromesa);
+                    
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            MesaPagos m = new MesaPagos
+                            {
+                                  Pagos = Convert.ToInt32(reader["Pagos"])
+                            };
+                          
+                           
+                            mesapagos.Add(m);
+
+                        }
+                    }
+                }
+
+            }
+            return mesapagos;
+        }
+
         [HttpGet("")]
         [ActionName("lugSectImpre")]
         [EnableCors("MyCors")]
@@ -295,7 +329,7 @@ namespace ApiRestRs.Controllers
                 using (SqlCommand cmd = new("spG_LugSectImpre", connection))
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                   
+
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -307,8 +341,8 @@ namespace ApiRestRs.Controllers
                                 idImpresora = Convert.ToInt32(reader["idImpresora"]),
                                 descripcion = reader["descripcion"].ToString()
 
-                            };  
-                           
+                            };
+
                             lugSect.Add(s);
 
                         }

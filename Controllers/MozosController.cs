@@ -10,7 +10,7 @@ namespace ApiRestRs.Controllers
     [ApiController]
     public class MozosController
     {
-        public readonly string? con;
+        public string? con;
         public MozosController(IConfiguration configuration)
         {
             con = configuration.GetConnectionString("conexion") + " Password=6736";
@@ -105,7 +105,10 @@ namespace ApiRestRs.Controllers
         //[Route("param_mozos")]
         public IEnumerable<ParamMozos> ParamMozos()
         {
+           
             List<ParamMozos> parammozos = new();
+          
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -190,6 +193,40 @@ namespace ApiRestRs.Controllers
 
             }
             return disp;
+
+        }
+
+        [HttpGet("")]
+        [ActionName("noticias_mozos")]
+        [EnableCors("MyCors")]
+
+        public IEnumerable<NoticiasMozos> NoticiasMozos()
+        {
+            List<NoticiasMozos> noticias = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_NoticiasMozos", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            NoticiasMozos n = new NoticiasMozos
+                            {
+                                idMozo = Convert.ToInt32(reader["idMozo"]),
+                                descNoticia = reader["descNoticia"].ToString(),
+                            };
+                            noticias.Add(n);
+
+                        }
+                    }
+                }
+
+            }
+            return noticias;
 
         }
 

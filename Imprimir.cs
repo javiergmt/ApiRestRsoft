@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Reflection;
 using System.Drawing.Printing;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ApiRestRs
 
@@ -19,21 +20,27 @@ namespace ApiRestRs
         static extern SafeFileHandle CreateFile(string lpFileName, FileAccess dwDesiredAccess,
                        uint dwShareMode, IntPtr lpSecurityAttributes, FileMode dwCreationDisposition,
                                   FileAttributes dwFlagsAndAttributes, IntPtr hTemplateFile);
-            
-        public static void ImprimirComanda(EnMesaDetMult? m , string? con)
+
+        public static void ImprimirComanda(EnMesaDetMult? m, string? con)
         {
-            
+
             SqlConnection conPar = new(con);
             SqlDataReader dataParamCom;
-            string sqlParamCom = "Select * From Parametros_Comandas";
+            string sqlParamCom = "Select imprimeComandas,isnull(idImpresoraComandaCentral,0) as idImpresoraComandaCentral," +
+                "DelimitadorEntrada1,DelimitadorEntrada2,DelimitadorEntrada3,concatenarGustos," +
+                "detallarPlatosEnCombina From Parametros_Comandas";
             conPar.Open();
             SqlCommand cmdParamCom = new SqlCommand(sqlParamCom, conPar);
             dataParamCom = cmdParamCom.ExecuteReader();
-            dataParamCom.Read();    
+            dataParamCom.Read();
             if (dataParamCom["imprimeComandas"].ToString() == "N")
             {
-               return;
+                return;
             }
+
+            var idImpComandaCentral = Convert.ToInt32(dataParamCom["idImpresoraComandaCentral"]);
+            var detallarPlatos = Convert.ToInt32(dataParamCom["detallarPlatosEnCombina"]);
+            var concatenarGustos = Convert.ToInt32(dataParamCom["concatenarGustos"]);
 
             var Delim1 = dataParamCom["DelimitadorEntrada1"].ToString();
             var Delim2 = dataParamCom["DelimitadorEntrada2"].ToString();
@@ -70,20 +77,20 @@ namespace ApiRestRs
 
                 #region Linq Deffered Query  
                 var entradas = from md in m.MesaDetM
-                              where (md.idSectorExped == idSectorExped && md.esEntrada)
-                              select md;
+                               where (md.idSectorExped == idSectorExped && md.esEntrada)
+                               select md;
                 #endregion
 
                 #region Linq Deffered Query  
                 var detalle = from md in m.MesaDetM
-                              where ( md.idSectorExped == idSectorExped || md.idTipoConsumo == "CB" )
-                              && ( !md.esEntrada )                                                         
+                              where (md.idSectorExped == idSectorExped || md.idTipoConsumo == "CB")
+                              && (!md.esEntrada)
                               select md;
                 #endregion
 
 
-                if ( detalle.Count() > 0 || entradas.Count() > 0)
-                    {
+                if (detalle.Count() > 0 || entradas.Count() > 0)
+                {
 
                     var titulo = false;
                     var hayEntradas = entradas.Count() > 0;
@@ -120,10 +127,10 @@ namespace ApiRestRs
                                 {
                                     ImprimirTexto(fs, margin + "   " + gusto.descripcion);
                                 }
-                            }   
+                            }
                         }
 
-                        if( hayEntradas)
+                        if (hayEntradas)
                         {
                             Letra_Normal_Normal(fs);
                             ImprimirTexto(fs, margin + Delim1);
@@ -141,7 +148,7 @@ namespace ApiRestRs
                                 // Impresion de Combos
                                 foreach (var comb in reng.Combos)
                                 {
-                                    if( comb.idSectorExped == idSectorExped)
+                                    if (comb.idSectorExped == idSectorExped)
                                     {
                                         if (!titulo)
                                         {
@@ -152,7 +159,7 @@ namespace ApiRestRs
 
                                         }
 
-                                        
+
                                         ImprimirTexto(fs, margin + comb.cant.ToString() + " EN COMBO: " + comb.descripcion);
                                         if (comb.CombosGustos != null)
                                         {
@@ -172,29 +179,58 @@ namespace ApiRestRs
                                     titulo = true;
                                     Inicializar(fs);
                                     ImprimirTitulo(fs, margin, dataReader["Descripcion"].ToString(), reng.nroMesa.ToString(),
-                                       reng.idMozo.ToString(), reng.nombreMozo, 1 , reng.fechaHora);
-                                    
+                                       reng.idMozo.ToString(), reng.nombreMozo, 1, reng.fechaHora);
+
                                 }
-                              
-                                ImprimirTexto(fs, margin + reng.cant.ToString() + ' ' + reng.descripcion);
-                                if (reng.obs != null && reng.obs != "") 
+                                if (reng.Combos != null)
                                 {
-                                    ImprimirTexto(fs, margin + "   " + reng.obs);
-                                }
-                                if (reng.idTamanio != 0)
-                                {
-                                    ImprimirTexto(fs, margin + "   " + reng.tamanio);                                    
-                                }
-                                if (reng.Gustos != null)
-                                {
-                                    foreach (var gusto in reng.Gustos)
+                                    // Impresion de Combos
+                                    foreach (var comb in reng.Combos)
                                     {
-                                        ImprimirTexto(fs, margin + "   " + gusto.descripcion);
+                                        if (comb.idSectorExped == idSectorExped)
+                                        {
+                                            if (!titulo)
+                                            {
+                                                titulo = true;
+                                                Inicializar(fs);
+                                                ImprimirTitulo(fs, margin, dataReader["Descripcion"].ToString(), reng.nroMesa.ToString(),
+                                                                reng.idMozo.ToString(), reng.nombreMozo, 1, reng.fechaHora);
+
+                                            }
+
+
+                                            ImprimirTexto(fs, margin + comb.cant.ToString() + " EN COMBO: " + comb.descripcion);
+                                            if (comb.CombosGustos != null)
+                                            {
+                                                foreach (var gusto in comb.CombosGustos)
+                                                {
+                                                    ImprimirTexto(fs, margin + "   " + gusto.descripcion);
+                                                }
+                                            }
+                                        }
                                     }
                                 }
-                                
+                                else
+                                {
+                                    ImprimirTexto(fs, margin + reng.cant.ToString() + ' ' + reng.descripcion);
+                                    if (reng.obs != null && reng.obs != "")
+                                    {
+                                        ImprimirTexto(fs, margin + "   " + reng.obs);
+                                    }
+                                    if (reng.idTamanio != 0)
+                                    {
+                                        ImprimirTexto(fs, margin + "   " + reng.tamanio);
+                                    }
+                                    if (reng.Gustos != null)
+                                    {
+                                        foreach (var gusto in reng.Gustos)
+                                        {
+                                            ImprimirTexto(fs, margin + "   " + gusto.descripcion);
+                                        }
+                                    }
+                                }
                             }
-                            
+
                         }
                         if (titulo)
                         {
@@ -209,42 +245,86 @@ namespace ApiRestRs
 
                                 #region Linq Deffered Query  
                                 var combina = from cb in m.MesaDetM
-                                              where (cb.idSectorExped != idSectorExped)
+                                              where ( (cb.idSectorExped != idSectorExped)  )
                                               select cb;
                                 #endregion
                                 string[] sectComb = [];
-                                
+                                List <string> platosComb = [];
+
                                 foreach (var comb in combina)
                                 {
-                                   
-                                    var sect = comb.idSectorExped;
-                                    SqlConnection conSec = new(con);
-                                    SqlDataReader dataSec;
-                                    string sqlSec = "Select * From Sectores_Exped where idSectorExped = " + sect;
-                                    conSec.Open();
-                                    SqlCommand cmdSec = new SqlCommand(sqlSec, conSec);
-                                    dataSec = cmdSec.ExecuteReader();
-                                    dataSec.Read();
-                                    if (Convert.ToInt32(dataSec["combinacomandas"]) == 1)
+                                    if ( (comb.idTipoConsumo == "CB") & (comb.Combos != null))
                                     {
-                                        var descripcion = dataSec["Descripcion"].ToString();
-                                        int indice = Array.IndexOf(sectComb, descripcion);
-                                        if ( indice == -1 )
+                                        foreach (var combos in comb.Combos)
                                         {
-                                            Array.Resize(ref sectComb, sectComb.Length + 1);
-                                            sectComb[sectComb.Length - 1] = descripcion;
+                                            var sect = combos.idSectorExped;
+                                            if (sect != idSectorExped)
+                                            {
+                                                SqlConnection conSec = new(con);
+                                                SqlDataReader dataSec;
+                                                string sqlSec = "Select * From Sectores_Exped where idSectorExped = " + sect;
+                                                conSec.Open();
+                                                SqlCommand cmdSec = new SqlCommand(sqlSec, conSec);
+                                                dataSec = cmdSec.ExecuteReader();
+                                                dataSec.Read();
+                                                if (Convert.ToInt32(dataSec["combinacomandas"]) == 1)
+                                                {
+                                                    var descripcion = dataSec["Descripcion"].ToString();
+                                                    int indice = Array.IndexOf(sectComb, descripcion);
+                                                    if (indice == -1)
+                                                    {
+                                                        Array.Resize(ref sectComb, sectComb.Length + 1);
+                                                        sectComb[sectComb.Length - 1] = descripcion;
+                                                    }
+                                                    platosComb.Add(combos.descripcion);
+
+                                                }
+                                            }
                                         }
-                                        
+                                    }
+                                    else
+                                    {
+                                        var sect = comb.idSectorExped;
+
+                                        SqlConnection conSec = new(con);
+                                        SqlDataReader dataSec;
+                                        string sqlSec = "Select * From Sectores_Exped where idSectorExped = " + sect;
+                                        conSec.Open();
+                                        SqlCommand cmdSec = new SqlCommand(sqlSec, conSec);
+                                        dataSec = cmdSec.ExecuteReader();
+                                        dataSec.Read();
+                                        if (Convert.ToInt32(dataSec["combinacomandas"]) == 1)
+                                        {
+                                            var descripcion = dataSec["Descripcion"].ToString();
+                                            int indice = Array.IndexOf(sectComb, descripcion);
+                                            if (indice == -1)
+                                            {
+                                                Array.Resize(ref sectComb, sectComb.Length + 1);
+                                                sectComb[sectComb.Length - 1] = descripcion;
+                                            }
+                                            platosComb.Add(comb.descripcion);
+
+                                        }
                                     }
                                 };
-                                
+
                                 for (int i = 0; i < sectComb.Length; i++)
                                 {
                                     Letra_Normal_Normal(fs);
                                     ImprimirTexto(fs, margin + "Combina con: " + sectComb[i]);
                                 }
-                                    
-                                
+
+                                if (detallarPlatos == 1)
+                                {
+                                    for (int i = 0; i < platosComb.Count; i++)
+                                    {
+                                        Letra_Normal_Normal(fs);
+                                        ImprimirTexto(fs, margin + platosComb[i]);
+                                    }
+                                }
+
+
+
                             }
                             SaltarLinea(fs, "1");
                             Letra_Normal_Normal(fs);
@@ -257,10 +337,160 @@ namespace ApiRestRs
 
                     }
                 }
-            }
-            connection.Close();
+            } // Fin del While
+
+            // Comanda Centralizada
+            if (idImpComandaCentral != 0)
+            {
+
+                Boolean titulo = false;
+                SqlConnection conCent = new(con);
+                SqlDataReader dataCent;
+                string sqlCent = "Select * from Impresoras where idImpresora = " + idImpComandaCentral;
+                conCent.Open();
+                SqlCommand cmdCent = new SqlCommand(sqlCent, conCent);
+                dataCent = cmdCent.ExecuteReader();
+                dataCent.Read();
+                string iP = dataCent["iP"].ToString();
+                int cantSaltos = Convert.ToInt32(dataCent["cantSaltos"]);
+                int cantSaltosCut = Convert.ToInt32(dataCent["cantSaltosCut"]);
+                int margen = Convert.ToInt32(dataCent["margen"]);
+                string margin = "".PadLeft(margen);
+                int anchoHoja = Convert.ToInt32(dataCent["anchoHoja"]);
+                SafeFileHandle fileHandle = CreateFile(iP, FileAccess.Write, 0, IntPtr.Zero, FileMode.OpenOrCreate, 0, IntPtr.Zero);
+                if (fileHandle.IsInvalid)
+                {
+                    throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+                }
+
+                using (FileStream fs = new(fileHandle, FileAccess.Write))
+                {
+                    Inicializar(fs);
+                    SqlConnection conSect = new(con);
+                    SqlDataReader dataSect;
+                    string sqlSect = "Select * From Sectores_Exped Order by idSectorExped ";
+                    conSect.Open();
+                    SqlCommand cmdSect = new SqlCommand(sqlSect, conSect);
+                    dataSect = cmdSect.ExecuteReader();
+                    while (dataSect.Read())
+                    {
+                        int idSectorExped = Convert.ToInt32(dataSect["idSectorExped"]);
+                        string descSector = dataSect["Descripcion"].ToString();
+                        #region Linq Deffered Query  
+                        var centralizada = from md in m.MesaDetM
+                                           where (md.idSectorExped == idSectorExped || md.idTipoConsumo == "CB")
+                                           select md;
+                        #endregion
+                        Boolean titulosector = false;
+                        foreach (var ct in centralizada)
+                        {
+                            if (!titulo)
+                            {
+                                titulo = true;
+
+                                Inicializar(fs);
+                                ImprimirTitulo(fs, margin, "", ct.nroMesa.ToString(),
+                                                ct.idMozo.ToString(), ct.nombreMozo, 1, ct.fechaHora);
+                                SaltarLinea(fs, "1");
+                                Letra_Normal_Normal(fs);
+                            }
+
+
+                            if (ct.Combos != null)
+                            {
+                                // Impresion de Combos
+                                foreach (var comb in ct.Combos)
+                                {
+                                    if (comb.idSectorExped == idSectorExped)
+                                    {
+                                        if (!titulosector)
+                                        {
+                                            titulosector = true;
+                                            SaltarLinea(fs, "1");
+                                            Letra_Normal_Normal(fs);
+                                            ImprimirTexto(fs, margin + "--------------------------------------------------");
+                                            Letra_Doble_Alto(fs);
+                                            ImprimirTexto(fs, margin + "          " + "Sector: " + descSector);
+                                            Letra_Normal_Normal(fs);
+                                            ImprimirTexto(fs, margin + "--------------------------------------------------");
+                                         
+                                        }
+                                        Letra_Doble_Alto(fs);
+                                        ImprimirTexto(fs, margin + comb.cant.ToString() + " EN COMBO: " + comb.descripcion);
+                                        if (comb.CombosGustos != null)
+                                        {
+                                            foreach (var gusto in comb.CombosGustos)
+                                            {
+                                               
+                                                ImprimirTexto(fs, margin + "   " + gusto.descripcion);
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                if (!titulosector)
+                                {
+                                    titulosector = true;
+                                    SaltarLinea(fs, "1");
+                                    Letra_Normal_Normal(fs);
+                                    ImprimirTexto(fs, margin + "--------------------------------------------------");
+                                    Letra_Doble_Alto(fs);
+                                    ImprimirTexto(fs, margin + "          " + "Sector: " + descSector);
+                                    Letra_Normal_Normal(fs);
+                                    ImprimirTexto(fs, margin + "--------------------------------------------------");
+
+                                }
+                                Letra_Doble_Alto(fs);
+                                ImprimirTexto(fs, margin + ct.cant.ToString() + ' ' + ct.descripcion);
+                                if (ct.obs != null && ct.obs != "")
+                                {
+                                    ImprimirTexto(fs, margin + "   " + ct.obs);
+                                }
+                                if (ct.idTamanio != 0)
+                                {
+                                    ImprimirTexto(fs, margin + "   " + ct.tamanio);
+                                }
+                                if (ct.Gustos != null)
+                                {
+                                    foreach (var gusto in ct.Gustos)
+                                    {
+                                        ImprimirTexto(fs, margin + "   " + gusto.descripcion);
+                                    }
+                                }
+                            }
+                            //            
+                        } // fin del foreach de centralizada
+                    } // fin del while de sectores
+
+                    Letra_Normal_Normal(fs);
+                    ImprimirTexto(fs, margin + "--------------------------------------------------");
+                    SaltarLinea(fs, "1");
+                    ImprimirTexto(fs, margin + "     " + "####################### FIN ####################");
+                    SaltarLinea(fs, cantSaltosCut.ToString());
+                    Corte_Papel(fs);
+                    fs.Dispose();
+                    connection.Close();
+                } // fin del using de fs
+            } // fin del if de impresora centralizada
+
         }
 
+
+
+        public static string retNombreSector(int idSector,string con)           
+        {
+            SqlConnection conCent = new(con);
+            SqlDataReader dataCent;
+            string sqlCent = "Select * From Sectores_Exped where idSectorExped = " + idSector;
+            conCent.Open();
+            SqlCommand cmdCent = new SqlCommand(sqlCent, conCent);
+            dataCent = cmdCent.ExecuteReader();
+            dataCent.Read();
+            return  dataCent["Descripcion"].ToString();
+        }
         public static void ImprimirTitulo(FileStream fs,string margin,string sector, string nroMesa,
             string nroMozo, string nombMozo, int comensales, DateTime fechaHora)
 
@@ -268,7 +498,10 @@ namespace ApiRestRs
             Letra_Normal_Normal(fs);
             ImprimirTexto(fs, margin + "     " + "################### INICIO ###################");
             Letra_Doble_Alto(fs);
-            ImprimirTexto(fs, margin + "          " + "Sector: " + sector);
+            if (sector != "")
+            {
+                ImprimirTexto(fs, margin + "          " + "Sector: " + sector);
+            }
             ImprimirTexto(fs,"");
             ImprimirTexto(fs, margin + "Mesa: " + nroMesa);
             ImprimirTexto(fs, margin + "Mozo: (" + nroMozo + ") " + nombMozo);
@@ -277,11 +510,74 @@ namespace ApiRestRs
             ImprimirTexto(fs, margin + "--------------------------------------------------");
             Letra_Doble_Alto(fs);
         }
-        public static void Inicializar(FileStream fs)
+
+        public static void ImprimirMensaje(int idSectorExp,int idImpresora, string descripcion,string nombre, string? con)
+        {
+            SqlConnection conSect = new(con);
+            SqlDataReader dataSect;
+            string sqlSect = "Select idSectorExped,Descripcion from sectores_exped  " +
+                " Where idSectorExped = "+idSectorExp;
+            conSect.Open();
+            SqlCommand cmdSect = new SqlCommand(sqlSect, conSect);
+            dataSect = cmdSect.ExecuteReader();
+            dataSect.Read();
+            string descSector = dataSect["Descripcion"].ToString();
+
+            SqlConnection connection = new(con);
+            SqlDataReader dataReader;
+            string sql = "Select * from Impresoras where idImpresora = " + idImpresora;
+            connection.Open();
+            SqlCommand cmd = new SqlCommand(sql, connection);
+            dataReader = cmd.ExecuteReader();
+            dataReader.Read();
+            string iP = dataReader["iP"].ToString();
+            int cantSaltos = Convert.ToInt32(dataReader["cantSaltos"]);
+            int cantSaltosCut = Convert.ToInt32(dataReader["cantSaltosCut"]);
+            int margen = Convert.ToInt32(dataReader["margen"]);
+            string margin = "".PadLeft(margen);
+            int anchoHoja = Convert.ToInt32(dataReader["anchoHoja"]);
+            SafeFileHandle fileHandle = CreateFile(iP, FileAccess.Write, 0, IntPtr.Zero, FileMode.OpenOrCreate, 0, IntPtr.Zero);
+            if (fileHandle.IsInvalid)
+            {
+                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+            }
+            using (FileStream fs = new(fileHandle, FileAccess.Write))
+            {
+                Inicializar(fs);
+
+                Letra_Normal_Normal(fs);
+                ImprimirTexto(fs, margin + "######################################################");
+                Letra_Doble_Alto(fs);
+                ImprimirTexto(fs, margin + "                 MENSAJE");
+                Letra_Normal_Normal(fs);
+                ImprimirTexto(fs, margin + "######################################################");
+                ImprimirTexto(fs, margin + "Sector: "+descSector);
+                ImprimirTexto(fs, margin + nombre);
+                ImprimirTexto(fs, margin + "Fecha:  " + DateTime.Now);
+                ImprimirTexto(fs, margin + "--------------------------------------------------");
+                Letra_Doble_Alto(fs);
+                ImprimirTexto(fs, margin + descripcion);
+                ImprimirTexto(fs, margin );
+                Letra_Normal_Normal(fs);
+                ImprimirTexto(fs, margin + "######################################################");
+                Letra_Doble_Alto(fs);
+                ImprimirTexto(fs, margin + "             FIN MENSAJE");
+                Letra_Normal_Normal(fs);
+                ImprimirTexto(fs, margin + "######################################################");
+                SaltarLinea(fs, cantSaltosCut.ToString());
+                Corte_Papel(fs);
+                fs.Dispose();
+            }
+            connection.Close(); 
+        }
+
+
+            public static void Inicializar(FileStream fs)
         {
             fs.WriteByte(0x1b); // ESC
             fs.WriteByte(0x40); // @
         }
+
         public static void SaltarLinea(FileStream fs, string n)
         {
             fs.WriteByte(0x1b); // ESC
@@ -297,6 +593,20 @@ namespace ApiRestRs
             fs.WriteByte(Convert.ToByte('d')); // feed n lines
             fs.WriteByte(Convert.ToByte(1)); // n lines
 
+        }
+
+        public static void ImprimirCentrado(FileStream fs, string margin, string cadena, int ancho)
+        {
+            int cantEspacios = (int)(ancho - cadena.Length) / 2;
+            string espacios = string.Concat(System.Linq.Enumerable.Repeat(' ', (int)cantEspacios));
+            ImprimirTexto(fs, margin + espacios + cadena);
+        }
+
+        public static string EspaciosIzq(string cadena, int ancho)
+        {
+            int cantEspacios = (int)(ancho - cadena.Length);
+            string espacios = string.Concat(System.Linq.Enumerable.Repeat(' ', (int)cantEspacios));
+            return espacios + cadena;
         }
 
         public static void Letra_Normal_Normal(FileStream fs)
@@ -352,6 +662,136 @@ namespace ApiRestRs
            
         }
 
+        public static void ImprimirAceptacion(MesaCerrar? m, string? con)
+        {
+            
+            SqlConnection conPar = new(con);
+            SqlDataReader dataParamCom;
+            string sqlParamCom = "Select * From Parametros";
+            conPar.Open();
+            SqlCommand cmdParamCom = new SqlCommand(sqlParamCom, conPar);
+            dataParamCom = cmdParamCom.ExecuteReader();
+            dataParamCom.Read();
+            string Leyenda1 = dataParamCom["LeyendaAcep1"].ToString();
+            string Leyenda2 = dataParamCom["LeyendaAcep2"].ToString();
+            string Leyenda3 = dataParamCom["LeyendaAcep3"].ToString();
+            string Leyenda4 = dataParamCom["LeyendaAcep4"].ToString();
+            string LeyendaPie1 = dataParamCom["LeyendaPie1"].ToString();
+            string LeyendaPie2 = dataParamCom["LeyendaPie1"].ToString();
+            string LeyendaPie3 = dataParamCom["LeyendaPie1"].ToString();
+            string LeyendaPie4 = dataParamCom["LeyendaPie1"].ToString();
+            int idImpresora = Convert.ToInt32(dataParamCom["idImpresoraTicket"]);
+
+            SqlConnection connection = new(con);
+            SqlDataReader dataReader;
+            string sql = "Select * from Impresoras where idImpresora = " + idImpresora;
+            connection.Open();
+            SqlCommand cmd = new SqlCommand(sql, connection);
+            dataReader = cmd.ExecuteReader();
+            dataReader.Read();
+            string iP = dataReader["iP"].ToString();
+            int cantSaltos = Convert.ToInt32(dataReader["cantSaltos"]);
+            int cantSaltosCut = Convert.ToInt32(dataReader["cantSaltosCut"]);
+            int margen = Convert.ToInt32(dataReader["margen"]);
+            string margin = "".PadLeft(margen);
+            int anchoHoja = Convert.ToInt32(dataReader["anchoHoja"]);
+            SafeFileHandle fileHandle = CreateFile(iP, FileAccess.Write, 0, IntPtr.Zero, FileMode.OpenOrCreate, 0, IntPtr.Zero);
+            if (fileHandle.IsInvalid)
+            {
+                 throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+            }
+            using (FileStream fs = new(fileHandle, FileAccess.Write))
+            {
+                Inicializar(fs);
+                Letra_Normal_Normal(fs);
+
+                ImprimirCentrado(fs, margin, "<< Aceptacion de Consumo >>", 60);
+                if (Leyenda1 != "")
+                {
+                    ImprimirCentrado(fs, margin , Leyenda1,60);
+                }
+                if (Leyenda2 != "")
+                {
+                    ImprimirCentrado(fs, margin, Leyenda2, 60);
+                }
+                if (Leyenda3 != "")
+                {
+                    ImprimirCentrado(fs, margin, Leyenda3, 60);
+                }
+                if (Leyenda4 != "")
+                {
+                    ImprimirCentrado(fs, margin, Leyenda4, 60);
+                }
+
+              
+                Boolean titulo = true;
+                SqlConnection conDet = new(con);
+                SqlDataReader dataDetCon;
+                string sqlDetCon = "Select E.*,M.Nombre From EN_MESADET E INNER JOIN MOZOS M ON E.idMozo = M.idMozo  Where NroMesa = " + m.nroMesa;
+                conDet.Open();
+                SqlCommand cmdDetCon = new SqlCommand(sqlDetCon, conDet);
+                dataDetCon = cmdDetCon.ExecuteReader();
+                double total = 0;
+
+                while ( dataDetCon.Read() )
+                {
+                    int cant = Convert.ToInt32(dataDetCon["Cant"]);
+                    string descripcion = dataDetCon["Descripcion"].ToString();
+                    double importe = Convert.ToDouble(dataDetCon["Importe"]);
+                    int idMozo = Convert.ToInt32(dataDetCon["idMozo"]);
+                    string nombre = dataDetCon["Nombre"].ToString();
+                    total += importe;
+
+                    if (titulo)
+                    {
+                        titulo = false;
+                        ImprimirTexto(fs, margin + "Fecha:  " + DateTime.Now);
+                        Letra_Doble_Alto(fs);
+                        ImprimirTexto(fs, margin + "Mesa: " + m.nroMesa.ToString());
+                        ImprimirTexto(fs, margin + "Mozo: (" +idMozo.ToString() + ") " + nombre);
+                        ImprimirTexto(fs, margin + "Cliente: CONSUMIDOR FINAL");
+                        ImprimirTexto(fs, margin + "");
+                        Letra_Normal_Normal(fs);
+                        ImprimirTexto(fs, margin + "Cant Descripcion                          Importe ");
+                        ImprimirTexto(fs, margin + "--------------------------------------------------");
+                    }   
+
+                    ImprimirTexto(fs, margin + cant.ToString("0.00") + " " + descripcion );
+                    ImprimirTexto(fs, margin + ".................................... $ " + EspaciosIzq(importe.ToString("0.00"),10));
+                }
+                ImprimirTexto(fs, margin + "--------------------------------------------------");
+                ImprimirTexto(fs, margin + "                             Subtotal: "+EspaciosIzq(total.ToString("0.00"),10) );
+                ImprimirTexto(fs, margin + "                            Descuento:       0.00");
+                Letra_Doble_Alto(fs);
+                ImprimirTexto(fs, margin + "                   TOTAL: "+EspaciosIzq(total.ToString("0.00"),10) );
+                Letra_Normal_Normal(fs);
+                ImprimirTexto(fs, margin + "");
+                if (LeyendaPie1 != "")
+                {
+                    ImprimirCentrado(fs, margin, LeyendaPie1, 60);
+                }
+                if (LeyendaPie2 != "")
+                {
+                    ImprimirCentrado(fs, margin, LeyendaPie2, 60);
+                }
+                if (LeyendaPie3 != "")
+                {
+                    ImprimirCentrado(fs, margin, LeyendaPie3, 60);
+                }
+                if (LeyendaPie4 != "")
+                {
+                    ImprimirCentrado(fs, margin, LeyendaPie4, 60);
+                }
+
+                SaltarLinea(fs, cantSaltosCut.ToString());
+                Corte_Papel(fs);
+                fs.Dispose();
+            }
+            connection.Close();
+            
+
+        }
+
     }
-  
-}
+
+ }

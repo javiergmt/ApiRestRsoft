@@ -82,5 +82,11 @@
         public char Cocido { get; set; }
     }
 
-    
+
+    public class MesaPagos
+    {
+        public decimal Pagos { get; set; }
+        
+        
+    }
 }

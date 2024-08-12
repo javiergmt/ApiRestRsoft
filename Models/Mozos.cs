@@ -69,4 +69,11 @@
         
 
     }
+
+    public class NoticiasMozos
+    {
+        public int idMozo { get; set; }
+        public string? descNoticia { get; set; }
+
+    }
 }

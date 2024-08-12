@@ -25,6 +25,8 @@ namespace ApiRestRs.Controllers
         [EnableCors("MyCors")]
         public ActionResult Post([FromBody] MesaOperar m)
         {
+          
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -340,7 +342,7 @@ namespace ApiRestRs.Controllers
                     cmd.Parameters.AddWithValue("@idUsuario", m.idUsuario);
                     cmd.Parameters.AddWithValue("@fechaHoraElim", m.fechaHoraElim);
                     cmd.Parameters.AddWithValue("@idUsuarioElim", m.idUsuarioElim);
-                    cmd.Parameters.AddWithValue("@iMozoElim", m.idMozoElim);
+                    cmd.Parameters.AddWithValue("@idMozoElim", m.idMozoElim);
                     cmd.Parameters.AddWithValue("@idObs", m.idObs);
                     cmd.Parameters.AddWithValue("@observacion", m.observacion);
                     cmd.Parameters.AddWithValue("@comentario", m.comentario);
@@ -498,11 +500,7 @@ namespace ApiRestRs.Controllers
             
         }
 
-        private void ImprimirComanda(EnMesaDetM enMesaDetM, EnMesaDetMult m)
-        {
-            throw new NotImplementedException();
-        }
-
+     
         [HttpPost]
         [Route("grabaMensaje")]
         [EnableCors("MyCors")]
@@ -522,7 +520,15 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
-                        // Imprimir.ImprimirMensaje(m.idSectorExped, m.idImpresora,m.descripcion,con);
+                        string descNom = "";
+                        if (m.idMozo != 0) {
+                            descNom = "Mozo: " + m.nombre ;
+                        }
+                        if (m.idUsuario != 0)
+                        {
+                            descNom = "Usuario: " + m.nombre;
+                        }
+                        Imprimir.ImprimirMensaje(m.idSectorExped, m.idImpresora,m.descripcion,descNom,con);
                         return new JsonResult(new { res = "OK" });
                     }
                     catch (Exception ex)
@@ -577,10 +583,26 @@ namespace ApiRestRs.Controllers
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@nroMesa", m.nroMesa);
-                    
+                    cmd.Parameters.AddWithValue("@pagos", m.pagos);
+                    cmd.Parameters.AddWithValue("@descTipo", m.descTipo);
+                    cmd.Parameters.AddWithValue("@descImporte", m.descImporte);
+                    cmd.Parameters.AddWithValue("@idCliente", m.idCliente);
+                    cmd.Parameters.AddWithValue("@nombre", m.nombre);
+                    cmd.Parameters.AddWithValue("@direccion", m.direccion);
+                    cmd.Parameters.AddWithValue("@localidad", m.localidad);
+                    cmd.Parameters.AddWithValue("@telefono", m.telefono);
+                    cmd.Parameters.AddWithValue("@telefono2", m.telefono2);
+                    cmd.Parameters.AddWithValue("@telefono3", m.telefono3);
+                    cmd.Parameters.AddWithValue("@email", m.email);
+                    cmd.Parameters.AddWithValue("@idZona", m.idZona);
+                    cmd.Parameters.AddWithValue("@fechaNac", m.fechaNac);
+                    cmd.Parameters.AddWithValue("@idIva", m.idIva);
+                    cmd.Parameters.AddWithValue("@cuit", m.cuit);
+                    cmd.Parameters.AddWithValue("@tarjeta", m.tarjeta);
 
                     try
                     {
+                        Imprimir.ImprimirAceptacion(m, con);
                         cmd.ExecuteNonQuery();
                         return new JsonResult(new { res = "OK", mesa = m.nroMesa });
                     }
