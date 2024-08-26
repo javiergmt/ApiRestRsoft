@@ -2,22 +2,94 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using System.Data.SqlClient;
-using System;
+
+
 
 namespace ApiRestRs.Controllers
 {
     [Route("[action]")]
     [ApiController]
-    public class MozosController
+
+    
+    public class MozosController : ControllerBase
     {
         public string? con;
+        
+
         public MozosController(IConfiguration configuration)
         {
+                                   
             con = configuration.GetConnectionString("conexion") + " Password=6736";
+            
+            
+            //Console.WriteLine("Conectado a la base de datos");
+            //string HeaderBD;
+            //if (request.Headers != null)
+            //{
+            //    foreach (var item in request.Headers)
+            //    {
+            //        if (item.Key == "bd")
+            //        {
+            //            HeaderBD = item.Value.First();
+            //            Console.WriteLine(HeaderBD);
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    HeaderBD = "Restobar";
+            //}
+
+        }
+
+        [HttpGet("")]
+        [ActionName("usuarios")]
+        [EnableCors("MyCors")]
+
+        public IEnumerable<Usuarios> Usuarios()
+       
+        {
+            //Request.Headers.TryGetValue("bd", out var bd);
+            //if (bd.Count > 0)
+            //{
+            //    //con = con + " Database=" + bd[0];
+            //    Console.WriteLine(bd);
+            //}
+            //con = configuration.GetConnectionString("conexion") + " Database=RestobarW; Password=6736";
+
+            List<Usuarios> usuarios = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_Usuarios", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Usuarios u = new Usuarios
+                            {
+                                idUsuario = Convert.ToInt32(reader["IdUsuario"]),
+                                nombre = reader["Nombre"].ToString(),
+                                alias = reader["Alias"].ToString(),
+                                password = reader["Password"].ToString(),
+                                idGrupo = Convert.ToInt32(reader["IdGrupo"]),
+
+                            };
+                            usuarios.Add(u);
+
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            return usuarios;
+
         }
 
         [HttpGet("{pass}")]
-        //[Route("mozos_pass")]
         [ActionName("mozos_pass")]
         [EnableCors("MyCors")]
 
@@ -54,50 +126,13 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return mozos;
 
         }
 
-        [HttpGet("")]
-        //[Route("mozos_pass")]
-        [ActionName("usuarios")]
-        [EnableCors("MyCors")]
-
-        public IEnumerable<Usuarios> Usuarios()
-        {
-            List<Usuarios> usuarios = new();
-            using (SqlConnection connection = new(con))
-            {
-                connection.Open();
-                using (SqlCommand cmd = new("spG_Usuarios", connection))
-                {
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            Usuarios u = new Usuarios
-                            {
-                                idUsuario = Convert.ToInt32(reader["IdUsuario"]),
-                                nombre = reader["Nombre"].ToString(),
-                                alias = reader["Alias"].ToString(),
-                                password = reader["Password"].ToString(),
-                                idGrupo = Convert.ToInt32(reader["IdGrupo"]),
-                                
-                            };
-                            usuarios.Add(u);
-
-                        }
-                    }
-                }
-
-            }
-            return usuarios;
-
-        }
+        
 
         [HttpGet("")]
         [ActionName("param_mozos")]
@@ -131,7 +166,7 @@ namespace ApiRestRs.Controllers
                                 ColorMesaPorCobrar = reader["ColorMesaPorCobrar"].ToString(),
                                 ColorMesaSinPed = reader["ColorMesaSinPed"].ToString(),
                                 ColorPostre = reader["ColorPostre"].ToString(),
-                                Sucursal = Convert.ToInt32(reader["Sucursal"]),
+                                Sucursal = reader["Sucursal"] as int? ?? 0,
                                 ActivarSubEstadosMesa = Convert.ToBoolean(reader["ActivarSubEstadosMesa"]),
                                 ModificaPrecioEnMesa = Convert.ToBoolean(reader["ModificaPrecioEnMesa"]),
                                 PermiteDescLibre = Convert.ToBoolean(reader["PermiteDescLibre"]),
@@ -142,7 +177,7 @@ namespace ApiRestRs.Controllers
                                 MostrarRubroFavoritos = Convert.ToBoolean(reader["MostrarRubroFavoritos"]),
                                 OcultarTotalMesaMozos = Convert.ToBoolean(reader["OcultarTotalMesaMozos"]),
                                 PedirMotElimRenglon = Convert.ToBoolean(reader["PedirMotElimRenglon"]),
-                                PedirCubiertos = Convert.ToBoolean(reader["PedirCubiertos"]),
+                                PedirCubiertos = Convert.ToBoolean(reader["PedirCubiertos"] ?? false),
                                 idCubiertos = reader["idCubiertos"] as int? ?? 0,
                                 idTurnoCubierto = reader["idTurnoCubierto"] as int? ?? 0,
                                 Nombre = reader["Nombre"].ToString(),
@@ -156,7 +191,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             //Imprimir.ImprimirComanda();
             return parammozos;
@@ -190,7 +225,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return disp;
 
@@ -224,7 +259,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return noticias;
 
@@ -267,8 +302,8 @@ namespace ApiRestRs.Controllers
 
                         }
                     }
-                } 
-
+                }
+                connection.Close();
             }
             return stprocs;
 

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
-using System.Drawing;
+//using System.Drawing;
 
 namespace ApiRestRs.Controllers
 
@@ -13,7 +13,7 @@ namespace ApiRestRs.Controllers
     {
         public readonly string? con;
 
-        public object PrinterSettings { get; private set; }
+        public object? PrinterSettings { get; private set; }
 
         public MesaOperarController(IConfiguration configuration)
         {
@@ -37,14 +37,17 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
+                        connection.Close();
                         return new JsonResult(new { res = "OK", mesa = m.NroMesa });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
-
+                
                 }
+               
             }
 
         }
@@ -66,10 +69,12 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
+                        connection.Close();
                         return new JsonResult(new { res = "OK", mesa = m.NroMesa });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
 
@@ -95,10 +100,12 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
+                        connection.Close();
                         return new JsonResult(new { res = "OK", mesa = m.nromesa, m.mozo });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
 
@@ -142,10 +149,12 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
+                        connection.Close();
                         return new JsonResult(new { res = "OK", mesa = m.nroMesa, m.idDetalle });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
 
@@ -175,10 +184,12 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
+                        connection.Close();
                         return new JsonResult(new { res = "OK", mesa = m.nroMesa, m.idDetalle });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
 
@@ -214,10 +225,12 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
+                        connection.Close();
                         return new JsonResult(new { res = "OK", mesa = m.nroMesa, m.idDetalle });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
 
@@ -246,10 +259,12 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
+                        connection.Close();
                         return new JsonResult(new { res = "OK", mesa = m.nroMesa, m.idDetalle });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
 
@@ -261,8 +276,11 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("mesa_comensales")]
         [EnableCors("MyCors")]
+   
         public ActionResult Post([FromBody] MesaComensales m)
         {
+            
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -275,10 +293,12 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
+                        connection.Close();
                         return new JsonResult(new { res = "OK", mesa = m.nroMesa });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
 
@@ -303,10 +323,12 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
+                        connection.Close();
                         return new JsonResult(new { res = "OK", mesa = m.nroMesa });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
 
@@ -351,10 +373,12 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
+                        connection.Close();
                         return new JsonResult(new { res = "OK", mesa = m.nroMesa });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
 
@@ -374,9 +398,6 @@ namespace ApiRestRs.Controllers
                 connection.Open();
                 SqlCommand command = connection.CreateCommand();
 
-                //command.CommandText =
-                //    "Insert into Region (RegionID, RegionDescription) VALUES (100, 'Description')";
-                //command.ExecuteNonQuery();
                 SqlTransaction transaction;
 
                 // Start a local transaction.
@@ -469,7 +490,9 @@ namespace ApiRestRs.Controllers
                            
                         }
                         transaction.Commit();
-                        Imprimir.ImprimirComanda( m , con);
+                        Imprimir.ImprimirComanda( m ,con);
+                        
+                        connection.Close();
                         return new JsonResult(new { res = 0, mensaje = "commit" });
                     }
                     catch (Exception ex)
@@ -481,6 +504,7 @@ namespace ApiRestRs.Controllers
                         try
                         {
                             transaction.Rollback();
+                            connection.Close();
                             return new JsonResult(new { res = 1, mensaje = "rollback: "+ex.Message });
                         }
                         catch (Exception ex2)
@@ -490,14 +514,15 @@ namespace ApiRestRs.Controllers
                             // a closed connection.
                             //Console.WriteLine("Rollback Exception Type: {0}", ex2.GetType());
                             //Console.WriteLine("  Message: {0}", ex2.Message);
+                            connection.Close();
                             return new JsonResult(new { res = -1, mensaje = "error: "+ex2.Message });
                         }
                     }
                 }
+                connection.Close();
                 return new JsonResult(new { res = 0, mensaje = "vacio" });
             }
-
-            
+           
         }
 
      
@@ -529,16 +554,18 @@ namespace ApiRestRs.Controllers
                             descNom = "Usuario: " + m.nombre;
                         }
                         Imprimir.ImprimirMensaje(m.idSectorExped, m.idImpresora,m.descripcion,descNom,con);
+                        connection.Close();
                         return new JsonResult(new { res = "OK" });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
-
-
                 }
+                
             }
+            
         }
 
         [HttpPost]
@@ -558,10 +585,12 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
+                        connection.Close();
                         return new JsonResult(new { res = "OK", rubro = r.IdRubro });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
 
@@ -604,10 +633,12 @@ namespace ApiRestRs.Controllers
                     {
                         Imprimir.ImprimirAceptacion(m, con);
                         cmd.ExecuteNonQuery();
+                        connection.Close();
                         return new JsonResult(new { res = "OK", mesa = m.nroMesa });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
 
@@ -635,10 +666,12 @@ namespace ApiRestRs.Controllers
                     try
                     {
                         cmd.ExecuteNonQuery();
+                        connection.Close();
                         return new JsonResult(new { res = "OK", mesa = m.nroMesa });
                     }
                     catch (Exception ex)
                     {
+                        connection.Close();
                         return new JsonResult(new { res = ex });
                     }
 

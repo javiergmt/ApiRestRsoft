@@ -28,5 +28,7 @@
         public int cantGustos { get; set; }
         public string? tamanio { get; set; }
         public int idSectorExped { get; set; }
+        public int impCentralizada { get; set; }
+
     }
 }

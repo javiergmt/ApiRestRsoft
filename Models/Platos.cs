@@ -38,6 +38,7 @@
         public int IdPlato { get; set; }
         public decimal pcioUnit { get; set; }
         public int IdSectorExped { get; set; }
+        public int impCentralizada { get; set; }
 
     }
     public class PlatoEnMesa

@@ -1,3 +1,5 @@
+using ApiRestRs.Authentication;
+
 var builder = WebApplication.CreateBuilder(args);
 var MyCors = "";
 
@@ -33,6 +35,8 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ApiKeyAuthMiddleware>();
 
 app.UseCors(MyCors);
 

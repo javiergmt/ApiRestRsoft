@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.Data;
-
-namespace ApiRestRs.Models
+﻿namespace ApiRestRs.Models
 {
     public class MesaOperar
     {
@@ -107,11 +104,6 @@ namespace ApiRestRs.Models
         public string? comentario { get; set; }
         public int puntoDeVenta { get; set; }
 
-
-
-
-
-
     }
     public class EnMesaDetCombos
     {
@@ -151,11 +143,13 @@ namespace ApiRestRs.Models
         public decimal cant { get; set; }
         public bool procesado { get; set; }
         public int idTamanio { get; set; }
+        public string? tamanio { get; set; }
         public string? obs { get; set; }
         public bool cocinado { get; set; }
         public DateTime fechaHora { get; set; }
         public bool comanda { get; set; }
         public int idSectorExped { get; set; }
+        public int impCentralizada { get; set; }
         public List<EnMesaDetCombosGustosM>? CombosGustos { get; set; }
     }
    
@@ -188,6 +182,7 @@ namespace ApiRestRs.Models
         public DateTime fechaHora { get; set; }
         public bool comanda { get; set; }
         public int idSectorExped { get; set; }
+        public int impCentralizada { get; set; }
         public List<EnMesaDetGustosM>? Gustos { get; set; }
         public List<EnMesaDetCombosM>? Combos { get; set; }
     }

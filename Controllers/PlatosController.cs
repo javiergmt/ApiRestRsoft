@@ -7,8 +7,9 @@ namespace ApiRestRs.Controllers
 {
     [Route("[action]")]
     [ApiController]
-    public class PlatosController
+    public class PlatosController 
     {
+        
         public readonly string? con;
         public PlatosController(IConfiguration configuration)
         {
@@ -19,7 +20,7 @@ namespace ApiRestRs.Controllers
         [HttpGet("{coper}/{ccadena}/{nrubro}/{nsubrubro}")]
         [ActionName("platos")]
         [EnableCors("MyCors")]
-        public IEnumerable<Platos> Platos(string coper, string ccadena, int nrubro, int nsubrubro)
+        public IEnumerable<Platos> Platos( string coper, string ccadena, int nrubro, int nsubrubro)
         {
             List<Platos> platos = new();
             using (SqlConnection connection = new(con))
@@ -61,7 +62,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return platos;
         }
@@ -95,7 +96,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return platosgustos;
         }
@@ -130,7 +131,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return platostam;
         }
@@ -159,7 +160,8 @@ namespace ApiRestRs.Controllers
                             {
                                 IdPlato = Convert.ToInt32(reader["IdPlato"]),
                                 pcioUnit = Convert.ToDecimal(reader["Precio"]),
-                                IdSectorExped = Convert.ToInt32(reader["IdSectorExp"])
+                                IdSectorExped = Convert.ToInt32(reader["IdSectorExp"]),
+                                impCentralizada = Convert.ToInt32(reader["impCentralizada"])
 
                             };
                             plato.Add(p);
@@ -167,7 +169,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return plato;
         }
@@ -205,7 +207,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return plato;
         }
@@ -251,7 +253,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return combo;
         }
@@ -285,14 +287,15 @@ namespace ApiRestRs.Controllers
                                 idTipoConsumo = reader["idTipoConsumo"].ToString(),
                                 cantGustos = Convert.ToInt32(reader["CantGustos"]),
                                 tamanio = reader["Tamanio"].ToString(),
-                                idSectorExped = Convert.ToInt32(reader["IdSectorExped"])
+                                idSectorExped = Convert.ToInt32(reader["IdSectorExped"]),
+                                impCentralizada = Convert.ToInt32(reader["ImprimeEncomandaCentralizada"])
                             };
                             combo.Add(p);
 
                         }
                     }
                 }
-
+                connection.Close();
             }
             return combo;
         }
@@ -326,6 +329,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
+                connection.Close();
 
             }
             return obs;
@@ -369,6 +373,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
+                connection.Close();
 
             }
             return plato;
@@ -404,6 +409,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
+                connection.Close();
 
             }
             return plato;
@@ -444,6 +450,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
+                connection.Close();
 
             }
             return plato;
@@ -483,6 +490,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
+                connection.Close();
 
             }
             return plato;
@@ -516,6 +524,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
+                connection.Close();
 
             }
             return obs;

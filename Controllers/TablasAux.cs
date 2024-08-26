@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿//using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
 using ApiRestRs.Models;
 using Microsoft.AspNetCore.Cors;
-using static System.Net.Mime.MediaTypeNames;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
+//using static System.Net.Mime.MediaTypeNames;
+//using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 
 namespace ApiRestRs.Controllers
@@ -71,6 +71,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
+                connection.Close();
 
             }
             return clientes;

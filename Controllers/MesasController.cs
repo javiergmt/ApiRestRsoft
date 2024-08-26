@@ -1,7 +1,7 @@
 ﻿using ApiRestRs.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
-using System.Data;
+//using System.Data;
 using System.Data.SqlClient;
 
 namespace ApiRestRs.Controllers
@@ -68,6 +68,7 @@ namespace ApiRestRs.Controllers
 
                         }
                     }
+                    connection.Close();
                 }
 
             }
@@ -115,7 +116,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return mesa;
 
@@ -152,7 +153,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return sectores;
         }
@@ -190,7 +191,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return mesasmozos;
         }
@@ -236,7 +237,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return mesaenc;
 
@@ -277,7 +278,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return mesadet;
 
@@ -312,7 +313,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return mesapagos;
         }
@@ -348,7 +349,7 @@ namespace ApiRestRs.Controllers
                         }
                     }
                 }
-
+                connection.Close();
             }
             return lugSect;
         }

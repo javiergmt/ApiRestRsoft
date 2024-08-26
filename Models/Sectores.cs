@@ -18,7 +18,7 @@
 
     public class MensXcomanda
     {
-        public string descripcion { get; set; }
+        public string? descripcion { get; set; }
         public int idMozo { get; set; }        
         public int idUsuario { get; set; }
         public string? nombre { get; set; }
