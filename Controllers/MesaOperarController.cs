@@ -414,14 +414,29 @@ namespace ApiRestRs.Controllers
                         {
                             command.Parameters.Clear();
 
-                            // Grabo detalle
-                            command.CommandText =
-                            "Insert into En_MesaDet (nroMesa, idDetalle,idPlato,cant,pcioUnit,importe,obs,idTamanio," +
-                            "tamanio, procesado, hora, idMozo, idUsuario, cocinado, esEntrada, descripcion," +
-                            "fechaHora, comanda) " +
-                            " VALUES(@nroMesa, @idDetalle, @idPlato, @cant, @pcioUnit, @importe, @obs, @idTamanio, " +
-                            "@tamanio, @procesado, @hora, @idMozo, @idUsuario, @cocinado, @esEntrada, @descripcion," +
-                            "@fechaHora, @comanda) ";
+                            // Grabo detalle en MesaDet o PedDet
+                            // Si idMozo = 0 es pedido
+                            // y en nroMesa viene el idPedido
+
+                            if (Mdet.idMozo == 0)
+                            {
+                                command.CommandText =
+                                "Insert into PedDet (idPedido, idDetalle ,idPlato, cant, pcioUnit, obs, idTamanio, " +
+                                " procesado, hora, idUsuario, cocinado, descripcion, fechaHora) " +
+                                " VALUES(@nroMesa, @idDetalle, @idPlato, @cant, @pcioUnit, @obs, @idTamanio, " +
+                                " @procesado, @hora, @idUsuario, @cocinado,@descripcion, @fechaHora) ";
+                            }
+                            else
+                            {
+                                command.CommandText =
+                                "Insert into En_MesaDet (nroMesa, idDetalle,idPlato,cant,pcioUnit,importe,obs,idTamanio," +
+                                "tamanio, procesado, hora, idMozo, idUsuario, cocinado, esEntrada, descripcion," +
+                                "fechaHora, comanda) " +
+                                " VALUES(@nroMesa, @idDetalle, @idPlato, @cant, @pcioUnit, @importe, @obs, @idTamanio, " +
+                                "@tamanio, @procesado, @hora, @idMozo, @idUsuario, @cocinado, @esEntrada, @descripcion," +
+                                "@fechaHora, @comanda) ";
+                            }
+                            
                             
                             command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@nroMesa", Value = Mdet.nroMesa });
                             command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idDetalle", Value = Mdet.idDetalle });
@@ -448,11 +463,23 @@ namespace ApiRestRs.Controllers
                             {
                                 foreach (var Mgus in Mdet.Gustos)
                                 {
-                                    // Grabo gustos
-                                    command.CommandText =
-                                    "Insert into En_MesaDet_Gustos (NroMesa, IdDetalle,idGusto, Descripcion) " +
-                                    "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + Mgus.idGusto +
-                                    ", '"+Mgus.descripcion + "')";
+                                    // Grabo gustos en En_MesaDet_Gustos
+                                    // o PedDet_Gustos
+
+                                    if (Mdet.idMozo == 0)
+                                    {
+                                        command.CommandText =
+                                        "Insert into PedDet_Gustos (idPedido, idDetalle, idGusto) " +
+                                         "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + Mgus.idGusto + ")";
+                                    }
+                                    else
+                                    {
+                                        command.CommandText =
+                                      "Insert into En_MesaDet_Gustos (NroMesa, IdDetalle,idGusto, Descripcion) " +
+                                      "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + Mgus.idGusto +
+                                      ", '" + Mgus.descripcion + "')";
+                                    }
+                                    
 
                                     command.ExecuteNonQuery();
                                 };
@@ -462,26 +489,50 @@ namespace ApiRestRs.Controllers
                             {
                                 foreach (var MCom in Mdet.Combos)
                                 {
-                                    // Grabo combos
-                                    command.CommandText =
-                                    "Insert into En_MesaDet_Combos (NroMesa, IdDetalle,idSeccion, idPlato," +
-                                    "Cant,Procesado,IdTamanio,Obs,Cocinado,FechaHora,Comanda) " +
-                                    "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + MCom.idSeccion + "," +
-                                     MCom.idPlato + ", " + MCom.cant + ",'" + MCom.procesado + "'," + MCom.idTamanio +
-                                     ",'" + MCom.obs + "','" + MCom.cocinado + "','" + MCom.fechaHora + "','" +
-                                     MCom.comanda + "')";
+                                    // Grabo combos en En_MesaDet_Combos
+                                    // o PedDet_Combos
+                                    if (Mdet.idMozo == 0)
+                                    {
+                                        command.CommandText =
+                                        "Insert into PedDet_Combos (idPedido, idDetalle, idSeccion, idPlato, Cant," +
+                                        " Procesado, IdTamanio, Obs, Cocinado, FechaHora) " +
+                                        "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + MCom.idSeccion + "," +
+                                        MCom.idPlato + ", " + MCom.cant + ",'" + MCom.procesado + "'," + MCom.idTamanio +
+                                        ",'" + MCom.obs + "','" + MCom.cocinado + "','" + MCom.fechaHora + "' )";
+                                    }
+                                    else
+                                    {
+                                        command.CommandText =
+                                        "Insert into En_MesaDet_Combos (NroMesa, IdDetalle,idSeccion, idPlato," +
+                                        "Cant,Procesado,IdTamanio,Obs,Cocinado,FechaHora,Comanda) " +
+                                        "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + MCom.idSeccion + "," +
+                                         MCom.idPlato + ", " + MCom.cant + ",'" + MCom.procesado + "'," + MCom.idTamanio +
+                                         ",'" + MCom.obs + "','" + MCom.cocinado + "','" + MCom.fechaHora + "','" +
+                                         MCom.comanda + "')";
+                                    }
                     
                                     command.ExecuteNonQuery();
+
                                     if (MCom.CombosGustos != null)
                                     {
                                         foreach (var MComGust in MCom.CombosGustos)
                                         {
-                                            // Grabo combos gustos
-                                            command.CommandText =
-                                            "Insert into En_MesaDet_Combos_Gustos (NroMesa, IdDetalle,idSeccion,idPlato,idGusto) " +
-                                            "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + MComGust.idSeccion +
-                                            "," + MComGust.idPlato + "," + MComGust.idGusto + ")";
-
+                                            // Grabo combos gustos en En_MesaDet_Combos_Gustos
+                                            // o PedDet_Combos_Gustos
+                                            if (Mdet.idMozo == 0)
+                                            {
+                                                command.CommandText =
+                                                "Insert into PedDet_Combos_Gustos (idPedido, idDetalle, idSeccion, idPlato, idGusto) " +
+                                                "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + MComGust.idSeccion +
+                                                "," + MComGust.idPlato + "," + MComGust.idGusto + ")";
+                                            }
+                                            else
+                                            {
+                                                command.CommandText =
+                                                "Insert into En_MesaDet_Combos_Gustos (NroMesa, IdDetalle,idSeccion,idPlato,idGusto) " +
+                                                "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + MComGust.idSeccion +
+                                                "," + MComGust.idPlato + "," + MComGust.idGusto + ")";
+                                            }
                                             command.ExecuteNonQuery();
                                         };
                                     }

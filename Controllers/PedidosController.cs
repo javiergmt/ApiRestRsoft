@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
 using ApiRestRs.Models;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 //using static System.Net.Mime.MediaTypeNames;
 //using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
@@ -22,7 +23,7 @@ namespace ApiRestRs.Controllers
         [HttpGet("{idRepartidor}/{fechaDesde}/{fechaHasta}/{cobrado}/{noPedidosCerrados}/{ptoVta}")]
         [ActionName("pedidos")]
         [EnableCors("MyCors")]
-        public IEnumerable<Pedidos> Pedidos(int idRepartidor, DateTime fechaDesde, DateTime fechaHasta,int cobrado, int noPedidosCerrados, int ptoVta)
+        public IEnumerable<Pedidos> Pedidos(int idRepartidor, DateTime fechaDesde, DateTime fechaHasta, int cobrado, int noPedidosCerrados, int ptoVta)
         {
             List<Pedidos> pedidos = new();
             using (SqlConnection connection = new(con))
@@ -64,7 +65,7 @@ namespace ApiRestRs.Controllers
                                 Usuario = reader["Usuario"].ToString(),
                                 Minutos = Convert.ToDecimal(reader["Minutos"])
 
-                                
+
                             };
                             pedidos.Add(p);
 
@@ -77,6 +78,10 @@ namespace ApiRestRs.Controllers
 
         }
 
-    }
-}
+
+        
+
+
+    } // Fin de la clase PedidosController
+} // Fin del namespace ApiRestRs.Controllers
 
