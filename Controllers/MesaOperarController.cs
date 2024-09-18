@@ -1,6 +1,8 @@
-﻿using ApiRestRs.Models;
+﻿using ApiRestRs.Authentication;
+using ApiRestRs.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
 //using System.Drawing;
 
@@ -9,23 +11,28 @@ namespace ApiRestRs.Controllers
 {
     //[Route("[controller]")]
     [ApiController]
-    public class MesaOperarController
+    public class MesaOperarController : ControllerBase
     {
-        public readonly string? con;
+        public string? con;
 
         public object? PrinterSettings { get; private set; }
 
         public MesaOperarController(IConfiguration configuration)
         {
-            con = configuration.GetConnectionString("conexion") + " Password=6736";
+            string HeaderBD = configuration.GetConnectionString("default");
+            con = configuration.GetConnectionString("conexion") + " Database = " + HeaderBD + "; Password=6736";
         }
 
         [HttpPost]
         [Route("mesa_bloquear")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] MesaOperar m)
+        public ActionResult Post(IConfiguration configuration,[FromBody] MesaOperar m)
         {
-          
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
 
             using (SqlConnection connection = new(con))
             {
@@ -55,9 +62,13 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("mesa_desbloquear")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] MesaDesbloquear m)
+        public ActionResult Post(IConfiguration configuration, [FromBody] MesaDesbloquear m)
         {
-            //var result = new Json({"resultado": "bloq"});
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
 
             using (SqlConnection connection = new(con))
             {
@@ -87,8 +98,14 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("mesa_abrir")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] MesaAbrir m)
+        public ActionResult Post(IConfiguration configuration, [FromBody] MesaAbrir m)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -119,8 +136,14 @@ namespace ApiRestRs.Controllers
         [EnableCors("MyCors")]
 
 
-        public ActionResult Post([FromBody] EnMesaDet m)
+        public ActionResult Post(IConfiguration configuration, [FromBody] EnMesaDet m)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -168,8 +191,14 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("mesa_det_gustos")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] EnMesaDetGustos m)
+        public ActionResult Post(IConfiguration configuration, [FromBody] EnMesaDetGustos m)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -202,8 +231,14 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("mesa_det_combos")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] EnMesaDetCombos m)
+        public ActionResult Post(IConfiguration configuration, [FromBody] EnMesaDetCombos m)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -242,8 +277,14 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("mesa_det_combos_gustos")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] EnMesaDetCombosGustos m)
+        public ActionResult Post(IConfiguration configuration, [FromBody] EnMesaDetCombosGustos m)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -277,9 +318,13 @@ namespace ApiRestRs.Controllers
         [Route("mesa_comensales")]
         [EnableCors("MyCors")]
    
-        public ActionResult Post([FromBody] MesaComensales m)
+        public ActionResult Post(IConfiguration configuration, [FromBody] MesaComensales m)
         {
-            
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
 
             using (SqlConnection connection = new(con))
             {
@@ -310,8 +355,14 @@ namespace ApiRestRs.Controllers
         [HttpDelete]
         [Route("mesa_borrar")]
         [EnableCors("MyCors")]
-        public ActionResult Delete([FromBody] MesaBorrar m)
+        public ActionResult Delete(IConfiguration configuration, [FromBody] MesaBorrar m)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -340,8 +391,14 @@ namespace ApiRestRs.Controllers
         [HttpDelete]
         [Route("mesa_renglon_borrar")]
         [EnableCors("MyCors")]
-        public ActionResult Delete([FromBody] MesaRenglonBorrar m)
+        public ActionResult Delete(IConfiguration configuration, [FromBody] MesaRenglonBorrar m)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -391,8 +448,14 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("mesa_det_mult")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] EnMesaDetMult m)
+        public ActionResult Post(IConfiguration configuration, [FromBody] EnMesaDetMult m)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -580,8 +643,14 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("grabaMensaje")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] MensXcomanda m)
+        public ActionResult Post(IConfiguration configuration, [FromBody] MensXcomanda m)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -622,8 +691,14 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("actIconoRubro")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] ActIconoRubro r)
+        public ActionResult Post(IConfiguration configuration, [FromBody] ActIconoRubro r)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -654,8 +729,14 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("mesa_cerrar")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] MesaCerrar m)
+        public ActionResult Post(IConfiguration configuration, [FromBody] MesaCerrar m)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -701,8 +782,14 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("mesa_renglon_cambiar")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] EnMesaDetRenglon m)
+        public ActionResult Post(IConfiguration configuration, [FromBody] EnMesaDetRenglon m)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -730,8 +817,91 @@ namespace ApiRestRs.Controllers
                 }
             }
         }
-    }
 
 
+        [HttpPost]
+        [Route("objeto_plano_cambiar")]
+        [EnableCors("MyCors")]
+        public ActionResult Post(IConfiguration configuration, [FromBody] MesasObjetos m)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
 
-}
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spP_ObjetoCambiar", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@idObjeto", m.idObjeto);
+                    cmd.Parameters.AddWithValue("@descripcion", m.descripcion);
+                    cmd.Parameters.AddWithValue("Forma", m.forma);
+                    cmd.Parameters.AddWithValue("@idSector", m.idSector);
+                    cmd.Parameters.AddWithValue("@color", m.color);
+                    cmd.Parameters.AddWithValue("@penColor", m.penColor);
+                    cmd.Parameters.AddWithValue("@penStyle", m.penStyle);
+                    cmd.Parameters.AddWithValue("@brushStyle", m.brushStyle);
+                    cmd.Parameters.AddWithValue("@posTop", m.posTop);
+                    cmd.Parameters.AddWithValue("@posLeft", m.posLeft);
+                    cmd.Parameters.AddWithValue("@width", m.width);
+                    cmd.Parameters.AddWithValue("@height", m.height);
+                    cmd.Parameters.AddWithValue("@puntasRedondeadas", m.puntasRedondeadas);
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        connection.Close();
+                        return new JsonResult(new { res = "OK" });
+                    }
+                    catch (Exception ex)
+                    {
+                        connection.Close();
+                        return new JsonResult(new { res = ex });
+                    }
+
+
+                }
+            }
+        }
+
+        [HttpDelete]
+        [Route("objeto_plano_borrar")]
+        [EnableCors("MyCors")]
+        public ActionResult Delete(IConfiguration configuration, [FromBody] ObjetoBorrar m)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spD_Objeto", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@idObjeto", m.idObjeto);
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        connection.Close();
+                        return new JsonResult(new { res = "OK"});
+                    }
+                    catch (Exception ex)
+                    {
+                        connection.Close();
+                        return new JsonResult(new { res = ex });
+                    }
+
+
+                }
+            }
+        }
+
+    } // Fin de la clase
+} // Fin del namespace

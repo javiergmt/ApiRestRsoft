@@ -2,27 +2,34 @@
 using System.Data.SqlClient;
 using ApiRestRs.Models;
 using Microsoft.AspNetCore.Cors;
+using ApiRestRs.Authentication;
 
 namespace ApiRestRs.Controllers
 {
     
     [ApiController]
-    public class PedidosPostController
+    public class PedidosPostController : ControllerBase
 
     {
 
-        public readonly string? con;
+        public string? con;
         public PedidosPostController(IConfiguration configuration)
         {
-            con = configuration.GetConnectionString("conexion") + " Password=6736";
+            string HeaderBD = configuration.GetConnectionString("default");
+            con = configuration.GetConnectionString("conexion") + " Database = " + HeaderBD + "; Password=6736";
         }
 
         [HttpPost]
         [Route("pedido_nuevo")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] PedEnc p)
+        public ActionResult Post(IConfiguration configuration, [FromBody] PedEnc p)
 
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
 
             using (SqlConnection connection = new(con))
             {
@@ -119,8 +126,14 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("factura_crear")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] FacturaCrear f)
+        public ActionResult Post(IConfiguration configuration, [FromBody] FacturaCrear f)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -129,12 +142,15 @@ namespace ApiRestRs.Controllers
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@idPedido", f.idPedido);
                     cmd.Parameters.AddWithValue("@nroMesa", f.nroMesa);
+                    cmd.Parameters.AddWithValue("@pagoEnMesa", f.pagoEnMesa);
                     cmd.Parameters.AddWithValue("@fiscal", f.fiscal);
                     cmd.Parameters.AddWithValue("@idRepartidor", f.idRepartidor);
                     cmd.Parameters.AddWithValue("@idObsDesc", f.idObsDesc);
                     cmd.Parameters.AddWithValue("@idUsuario", f.idUsuario);
                     cmd.Parameters.AddWithValue("@idCliente", f.idCliente);
                     cmd.Parameters.AddWithValue("@total", f.total);
+                    cmd.Parameters.AddWithValue("@tipoDesc", f.tipoDesc);
+                    cmd.Parameters.AddWithValue("@impDesc", f.impDesc);
 
                     try
                     {
@@ -177,8 +193,14 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("factura_pagar")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] FacturaPagar f)
+        public ActionResult Post(IConfiguration configuration, [FromBody] FacturaPagar f)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -215,8 +237,14 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("pedido_renglon_cambiar")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] PedidoRenglonCambiar p)
+        public ActionResult Post(IConfiguration configuration, [FromBody] PedidoRenglonCambiar p)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();
@@ -246,8 +274,14 @@ namespace ApiRestRs.Controllers
         [HttpPost]
         [Route("cliente_cambiar")]
         [EnableCors("MyCors")]
-        public ActionResult Post([FromBody] ClientesPedido c)
+        public ActionResult Post(IConfiguration configuration, [FromBody] ClientesPedido c)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             using (SqlConnection connection = new(con))
             {
                 connection.Open();

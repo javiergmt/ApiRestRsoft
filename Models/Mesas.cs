@@ -86,7 +86,34 @@
     public class MesaPagos
     {
         public decimal Pagos { get; set; }
-        
-        
+
+
     }
+
+    public class MesaForma
+    {
+        public int idForma { get; set; }
+        public string? descripcion { get; set; }
+    }
+
+    public class MesasObjetos
+    {
+        public int idObjeto { get; set; }
+        public string? descripcion { get; set; }
+        public int forma { get; set; }
+        public int idSector { get; set; }
+        public string? color { get; set; }
+        public string? penColor { get; set; }
+        public int brushStyle { get; set; }
+        public int penStyle { get; set; }
+        public int posTop { get; set; }
+        public int posLeft { get; set; }
+        public int width { get; set; }
+        public int height { get; set; }
+        public bool puntasRedondeadas { get; set; }
+
+    }
+
+    
+   
 }

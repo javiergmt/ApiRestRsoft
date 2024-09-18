@@ -2,60 +2,43 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using System.Data.SqlClient;
-
+using ApiRestRs.Authentication;
+using Microsoft.Extensions.Configuration;
 
 
 namespace ApiRestRs.Controllers
 {
+   
+
     [Route("[action]")]
     [ApiController]
 
     
+
     public class MozosController : ControllerBase
     {
         public string? con;
-        
 
         public MozosController(IConfiguration configuration)
         {
-                                   
-            con = configuration.GetConnectionString("conexion") + " Password=6736";
-            
-            
-            //Console.WriteLine("Conectado a la base de datos");
-            //string HeaderBD;
-            //if (request.Headers != null)
-            //{
-            //    foreach (var item in request.Headers)
-            //    {
-            //        if (item.Key == "bd")
-            //        {
-            //            HeaderBD = item.Value.First();
-            //            Console.WriteLine(HeaderBD);
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    HeaderBD = "Restobar";
-            //}
-
+            string HeaderBD = configuration.GetConnectionString("default");
+            con = configuration.GetConnectionString("conexion") + " Database = "+HeaderBD+ "; Password=6736";
         }
 
         [HttpGet("")]
         [ActionName("usuarios")]
         [EnableCors("MyCors")]
 
-        public IEnumerable<Usuarios> Usuarios()
+        public IEnumerable<Usuarios> Usuarios(IConfiguration configuration)
        
         {
-            //Request.Headers.TryGetValue("bd", out var bd);
-            //if (bd.Count > 0)
-            //{
-            //    //con = con + " Database=" + bd[0];
-            //    Console.WriteLine(bd);
-            //}
-            //con = configuration.GetConnectionString("conexion") + " Database=RestobarW; Password=6736";
+              
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if ( HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+            
 
             List<Usuarios> usuarios = new();
             using (SqlConnection connection = new(con))
@@ -93,8 +76,14 @@ namespace ApiRestRs.Controllers
         [ActionName("mozos_pass")]
         [EnableCors("MyCors")]
 
-        public IEnumerable<Mozos> Mozos(string pass)
+        public IEnumerable<Mozos> Mozos(IConfiguration configuration, string pass)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<Mozos> mozos = new();
             using (SqlConnection connection = new(con))
             {
@@ -138,9 +127,14 @@ namespace ApiRestRs.Controllers
         [ActionName("param_mozos")]
         [EnableCors("MyCors")]
         //[Route("param_mozos")]
-        public IEnumerable<ParamMozos> ParamMozos()
+        public IEnumerable<ParamMozos> ParamMozos(IConfiguration configuration)
         {
-           
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<ParamMozos> parammozos = new();
           
 
@@ -202,8 +196,14 @@ namespace ApiRestRs.Controllers
         [ActionName("disp_valido")]
         [EnableCors("MyCors")]
 
-        public IEnumerable<Disp> Disp(string id)
+        public IEnumerable<Disp> Disp(IConfiguration configuration, string id)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<Disp> disp = new();
             using (SqlConnection connection = new(con))
             {
@@ -235,8 +235,13 @@ namespace ApiRestRs.Controllers
         [ActionName("noticias_mozos")]
         [EnableCors("MyCors")]
 
-        public IEnumerable<NoticiasMozos> NoticiasMozos()
+        public IEnumerable<NoticiasMozos> NoticiasMozos(IConfiguration configuration)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
             List<NoticiasMozos> noticias = new();
             using (SqlConnection connection = new(con))
             {
@@ -269,8 +274,13 @@ namespace ApiRestRs.Controllers
         [ActionName("st_procs")]
         [EnableCors("MyCors")]
 
-        public IEnumerable<StProcs> StProcs(string cadena )
+        public IEnumerable<StProcs> StProcs(IConfiguration configuration, string cadena )
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
             List<StProcs> stprocs = new();
             using (SqlConnection connection = new(con))
             {

@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using ApiRestRs.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using ApiRestRs.Authentication;
 //using static System.Net.Mime.MediaTypeNames;
 //using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
@@ -14,17 +15,24 @@ namespace ApiRestRs.Controllers
     [ApiController]
     public class PedidosController : ControllerBase
     {
-        public readonly string? con;
+        public string? con;
         public PedidosController(IConfiguration configuration)
         {
-            con = configuration.GetConnectionString("conexion") + " Password=6736";
+            string HeaderBD = configuration.GetConnectionString("default");
+            con = configuration.GetConnectionString("conexion") + " Database = " + HeaderBD + "; Password=6736";
         }
 
         [HttpGet("{idRepartidor}/{fechaDesde}/{fechaHasta}/{cobrado}/{noPedidosCerrados}/{ptoVta}")]
         [ActionName("pedidos")]
         [EnableCors("MyCors")]
-        public IEnumerable<Pedidos> Pedidos(int idRepartidor, DateTime fechaDesde, DateTime fechaHasta, int cobrado, int noPedidosCerrados, int ptoVta)
+        public IEnumerable<Pedidos> Pedidos(IConfiguration configuration, int idRepartidor, DateTime fechaDesde, DateTime fechaHasta, int cobrado, int noPedidosCerrados, int ptoVta)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<Pedidos> pedidos = new();
             using (SqlConnection connection = new(con))
             {

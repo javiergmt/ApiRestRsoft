@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
 using ApiRestRs.Models;
 using Microsoft.AspNetCore.Cors;
+using ApiRestRs.Authentication;
 //using static System.Net.Mime.MediaTypeNames;
 //using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
@@ -13,16 +14,23 @@ namespace ApiRestRs.Controllers
     [ApiController]
     public class RubrosController : ControllerBase
     {
-        public readonly string? con;
+        public string? con;
         public RubrosController(IConfiguration configuration)
         {
-            con = configuration.GetConnectionString("conexion") + " Password=6736";
+            string HeaderBD = configuration.GetConnectionString("default");
+            con = configuration.GetConnectionString("conexion") + " Database = " + HeaderBD + "; Password=6736";
         }
 
         [HttpGet("{sucursal}/{favoritos}/{delivery}")]
         [ActionName("rubros")]
         [EnableCors("MyCors")]
-        public IEnumerable<Rubros> Rubros(int sucursal, int favoritos, int delivery) {
+        public IEnumerable<Rubros> Rubros(IConfiguration configuration, int sucursal, int favoritos, int delivery)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
             List<Rubros> rubros = new();
             using (SqlConnection connection = new(con))
             {
@@ -60,8 +68,13 @@ namespace ApiRestRs.Controllers
         [HttpGet("{idrubro}")]
         [ActionName("subrubros")]
         [EnableCors("MyCors")]
-        public IEnumerable<Subrubros> Subrubros(int idrubro)
+        public IEnumerable<Subrubros> Subrubros(IConfiguration configuration, int idrubro)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
             List<Subrubros> subrubros = new();
             using (SqlConnection connection = new(con))
             {
@@ -98,8 +111,13 @@ namespace ApiRestRs.Controllers
         [HttpGet("{sucursal}/{favoritos}/{delivery}")]
         [ActionName("rubros_sub")]
         [EnableCors("MyCors")]
-        public IEnumerable<RubrosSub> RubrosSub(int sucursal, int favoritos, int delivery)
+        public IEnumerable<RubrosSub> RubrosSub(IConfiguration configuration, int sucursal, int favoritos, int delivery)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
             List<RubrosSub> rubros_sub = new();
             
             using (SqlConnection connection = new(con))

@@ -2,24 +2,32 @@
 using System.Data.SqlClient;
 using ApiRestRs.Models;
 using Microsoft.AspNetCore.Cors;
+using ApiRestRs.Authentication;
 
 namespace ApiRestRs.Controllers
 {
     [Route("[action]")]
     [ApiController]
-    public class ReservasController
+  
+    public class ReservasController : ControllerBase
     {
-        public readonly string? con;
+        public string? con;
         public ReservasController(IConfiguration configuration)
         {
-            con = configuration.GetConnectionString("conexion") + " Password=6736";
+            string HeaderBD = configuration.GetConnectionString("default");
+            con = configuration.GetConnectionString("conexion") + " Database = " + HeaderBD + "; Password=6736";
         }
 
         [HttpGet("")]
         [ActionName("reservas_turnos")]
         [EnableCors("MyCors")]
-        public IEnumerable<TurnosReservas> TurnosReservas()
+        public IEnumerable<TurnosReservas> TurnosReservas(IConfiguration configuration)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
             List<TurnosReservas> turnos = new();
             using (SqlConnection connection = new(con))
             {
@@ -55,8 +63,13 @@ namespace ApiRestRs.Controllers
         [HttpGet("{fecha}")]
         [ActionName("reservas")]
         [EnableCors("MyCors")]
-        public IEnumerable<Reservas> Reservas(DateTime fecha)
+        public IEnumerable<Reservas> Reservas(IConfiguration configuration, DateTime fecha)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
             List<Reservas> reservas = new();
             using (SqlConnection connection = new(con))
             {
@@ -81,6 +94,7 @@ namespace ApiRestRs.Controllers
                                 hora = reader["hora"].ToString(),
                                 cant = Convert.ToInt32(reader["cant"]),
                                 obs = reader["obs"].ToString(),
+                                telefono = reader["telefono"].ToString(),
                                 idSector = Convert.ToInt32(reader["idSector"]),
                                 sector = reader["sector"].ToString(),
                                 mesa = Convert.ToInt32(reader["mesa"]),
@@ -101,5 +115,8 @@ namespace ApiRestRs.Controllers
             }
             return reservas;
         }
+
+        
+
     }
 }

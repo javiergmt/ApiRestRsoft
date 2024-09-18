@@ -199,5 +199,11 @@
         public int idDetalle { get; set; }
         public decimal cant { get; set; }
     }
+
+    public class ObjetoBorrar
+    {
+        public int idObjeto { get; set; }
+
+    }
 }
 

@@ -56,12 +56,15 @@
     {
         public int idPedido { get; set; }
         public int nroMesa { get; set; }
+        public bool pagoEnMesa { get; set; }
         public bool fiscal { get; set; }
         public int idRepartidor { get; set; }
         public int idObsDesc { get; set; }
         public int idUsuario { get; set; }
         public int idCliente { get; set; }
         public decimal total { get; set; }
+        public int tipoDesc { get; set; }
+        public decimal impDesc { get; set; }
 
     }
 

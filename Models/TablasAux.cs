@@ -77,5 +77,10 @@
         public string? nombre { get; set; }
 
     }
+    public class ObsDescuentos
+    {
+        public int idObs { get; set; }
+        public string? descripcion { get; set; }
 
+    }
 }

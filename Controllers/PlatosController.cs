@@ -1,4 +1,5 @@
-﻿using ApiRestRs.Models;
+﻿using ApiRestRs.Authentication;
+using ApiRestRs.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
@@ -7,21 +8,28 @@ namespace ApiRestRs.Controllers
 {
     [Route("[action]")]
     [ApiController]
-    public class PlatosController 
+    public class PlatosController : ControllerBase 
     {
         
-        public readonly string? con;
+        public string? con;
         public PlatosController(IConfiguration configuration)
         {
-            con = configuration.GetConnectionString("conexion") + " Password=6736";
+            string HeaderBD = configuration.GetConnectionString("default");
+            con = configuration.GetConnectionString("conexion") + " Database = " + HeaderBD + "; Password=6736";
         }
 
 
         [HttpGet("{coper}/{ccadena}/{nrubro}/{nsubrubro}")]
         [ActionName("platos")]
         [EnableCors("MyCors")]
-        public IEnumerable<Platos> Platos( string coper, string ccadena, int nrubro, int nsubrubro)
+        public IEnumerable<Platos> Platos(IConfiguration configuration, string coper, string ccadena, int nrubro, int nsubrubro)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<Platos> platos = new();
             using (SqlConnection connection = new(con))
             {
@@ -70,8 +78,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("{idplato}")]
         [ActionName("platos_gustos")]
         [EnableCors("MyCors")]
-        public IEnumerable<PlatosGustos> PlatosGustos(int idplato)
+        public IEnumerable<PlatosGustos> PlatosGustos(IConfiguration configuration, int idplato)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<PlatosGustos> platosgustos = new();
             using (SqlConnection connection = new(con))
             {
@@ -104,8 +118,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("{idplato}/{idsector}")]
         [ActionName("platos_tamanios")]
         [EnableCors("MyCors")]
-        public IEnumerable<PlatosTamanios> PlatosTamanios(int idplato, int idsector)
+        public IEnumerable<PlatosTamanios> PlatosTamanios(IConfiguration configuration, int idplato, int idsector)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<PlatosTamanios> platostam = new();
             using (SqlConnection connection = new(con))
             {
@@ -139,8 +159,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("{idplato}/{idtam}/{idsector}/{hora}")]
         [ActionName("plato_precio")]
         [EnableCors("MyCors")]
-        public IEnumerable<PlatoPrecio> PlatosPrecio(int idplato, int idtam, int idsector, string hora)
+        public IEnumerable<PlatoPrecio> PlatosPrecio(IConfiguration configuration, int idplato, int idtam, int idsector, string hora)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<PlatoPrecio> plato = new();
             using (SqlConnection connection = new(con))
             {
@@ -177,8 +203,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("{idplato}")]
         [ActionName("plato_en_mesa")]
         [EnableCors("MyCors")]
-        public IEnumerable<PlatoEnMesa> PlatoEnMesa(int idplato)
+        public IEnumerable<PlatoEnMesa> PlatoEnMesa(IConfiguration configuration, int idplato)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<PlatoEnMesa> plato = new();
             using (SqlConnection connection = new(con))
             {
@@ -216,8 +248,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("{idplato}")]
         [ActionName("combo_sec")]
         [EnableCors("MyCors")]
-        public IEnumerable<ComboSec> ComboSec(int idplato)
+        public IEnumerable<ComboSec> ComboSec(IConfiguration configuration, int idplato)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<ComboSec> combo = new();
             using (SqlConnection connection = new(con))
             {
@@ -262,8 +300,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("{idseccion}")]
         [ActionName("combo_det")]
         [EnableCors("MyCors")]
-        public IEnumerable<ComboDet> ComboDet(int idseccion)
+        public IEnumerable<ComboDet> ComboDet(IConfiguration configuration, int idseccion)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<ComboDet> combo = new();
             using (SqlConnection connection = new(con))
             {
@@ -304,8 +348,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("")]
         [ActionName("platos_obs")]
         [EnableCors("MyCors")]
-        public IEnumerable<PlatosObs> PlatosObs()
+        public IEnumerable<PlatosObs> PlatosObs(IConfiguration configuration)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<PlatosObs> obs = new();
             using (SqlConnection connection = new(con))
             {
@@ -338,8 +388,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("{nroMesa}/{idDetalle}")]
         [ActionName("plato_info")]
         [EnableCors("MyCors")]
-        public IEnumerable<PlatoInfo> PlatoInfo(int nroMesa, int idDetalle)
+        public IEnumerable<PlatoInfo> PlatoInfo(IConfiguration configuration, int nroMesa, int idDetalle)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<PlatoInfo> plato = new();
             using (SqlConnection connection = new(con))
             {
@@ -383,8 +439,13 @@ namespace ApiRestRs.Controllers
         [HttpGet("{nroMesa}/{idDetalle}")]
         [ActionName("plato_info_gustos")]
         [EnableCors("MyCors")]
-        public IEnumerable<PlatoInfoGustos> PlatoInfoGustos(int nroMesa, int idDetalle)
+        public IEnumerable<PlatoInfoGustos> PlatoInfoGustos(IConfiguration configuration, int nroMesa, int idDetalle)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
             List<PlatoInfoGustos> plato = new();
             using (SqlConnection connection = new(con))
             {
@@ -419,8 +480,13 @@ namespace ApiRestRs.Controllers
         [HttpGet("{nroMesa}/{idDetalle}")]
         [ActionName("plato_info_combo")]
         [EnableCors("MyCors")]
-        public IEnumerable<PlatoInfoCombo> PlatoInfoCombo(int nroMesa, int idDetalle)
+        public IEnumerable<PlatoInfoCombo> PlatoInfoCombo(IConfiguration configuration, int nroMesa, int idDetalle)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
             List<PlatoInfoCombo> plato = new();
             using (SqlConnection connection = new(con))
             {
@@ -461,8 +527,13 @@ namespace ApiRestRs.Controllers
         [HttpGet("{nroMesa}/{idDetalle}")]
         [ActionName("plato_info_combo_gustos")]
         [EnableCors("MyCors")]
-        public IEnumerable<PlatoInfoComboGustos> PlatoInfoComboGustos(int nroMesa, int idDetalle)
+        public IEnumerable<PlatoInfoComboGustos> PlatoInfoComboGustos(IConfiguration configuration, int nroMesa, int idDetalle)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
             List<PlatoInfoComboGustos> plato = new();
             using (SqlConnection connection = new(con))
             {
@@ -499,8 +570,13 @@ namespace ApiRestRs.Controllers
         [HttpGet("")]
         [ActionName("obsrenglones")]
         [EnableCors("MyCors")]
-        public IEnumerable<ObsRenglones> ObsRenglones()
+        public IEnumerable<ObsRenglones> ObsRenglones(IConfiguration configuration)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
             List<ObsRenglones> obs = new();
             using (SqlConnection connection = new(con))
             {

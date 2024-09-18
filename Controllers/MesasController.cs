@@ -3,18 +3,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 //using System.Data;
 using System.Data.SqlClient;
+using ApiRestRs.Authentication;
 
 namespace ApiRestRs.Controllers
 {
 
     [Route("[action]")]
     [ApiController]
-    public class MesasController
+    public class MesasController : ControllerBase
     {
-        public readonly string? con;
+        public string? con;
         public MesasController(IConfiguration configuration)
         {
-            con = configuration.GetConnectionString("conexion") + " Password=6736";
+            string HeaderBD = configuration.GetConnectionString("default");
+            con = configuration.GetConnectionString("conexion") + " Database = " + HeaderBD + "; Password=6736";
         }
 
 
@@ -22,8 +24,14 @@ namespace ApiRestRs.Controllers
         [ActionName("mesas")]
         [EnableCors("MyCors")]
 
-        public IEnumerable<Mesas> Mesas(int count, int idsector)
+        public IEnumerable<Mesas> Mesas(IConfiguration configuration, int count, int idsector)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<Mesas> mesas = new();
             using (SqlConnection connection = new(con))
             {
@@ -80,8 +88,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("{nromesa}/{sucursal}")]
         [ActionName("mesa")]
         [EnableCors("MyCors")]
-        public IEnumerable<Mesa> Mesa(int nromesa, int sucursal)
+        public IEnumerable<Mesa> Mesa(IConfiguration configuration, int nromesa, int sucursal)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<Mesa> mesa = new();
             using (SqlConnection connection = new(con))
             {
@@ -125,8 +139,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("{count}/{sucursal}/{delivery}")]
         [ActionName("sectores")]
         [EnableCors("MyCors")]
-        public IEnumerable<Sectores> Sectores(int count, int sucursal, int delivery)
+        public IEnumerable<Sectores> Sectores(IConfiguration configuration, int count, int sucursal, int delivery)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<Sectores> sectores = new();
             using (SqlConnection connection = new(con))
             {
@@ -161,8 +181,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("{idmozo}")]
         [ActionName("mesas_mozos")]
         [EnableCors("MyCors")]
-        public IEnumerable<MesasMozos> MesasMozos(int idmozo)
+        public IEnumerable<MesasMozos> MesasMozos(IConfiguration configuration, int idmozo)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<MesasMozos> mesasmozos = new();
             using (SqlConnection connection = new(con))
             {
@@ -200,8 +226,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("{nromesa}")]
         [ActionName("mesa_enc")]
         [EnableCors("MyCors")]
-        public IEnumerable<MesaEnc> MesaEnc(int nromesa)
+        public IEnumerable<MesaEnc> MesaEnc(IConfiguration configuration, int nromesa)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<MesaEnc> mesaenc = new();
             using (SqlConnection connection = new(con))
             {
@@ -247,8 +279,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("{nromesa}/{agrupar}")]
         [ActionName("mesa_det")]
         [EnableCors("MyCors")]
-        public IEnumerable<MesaDet> MesaDet(int nromesa, int agrupar)
+        public IEnumerable<MesaDet> MesaDet(IConfiguration configuration, int nromesa, int agrupar)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<MesaDet> mesadet = new();
             using (SqlConnection connection = new(con))
             {
@@ -287,8 +325,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("{nromesa}")]
         [ActionName("mesa_pagos")]
         [EnableCors("MyCors")]
-        public IEnumerable<MesaPagos> MesaPagos(int nromesa)
+        public IEnumerable<MesaPagos> MesaPagos(IConfiguration configuration, int nromesa)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<MesaPagos> mesapagos = new();
             using (SqlConnection connection = new(con))
             {
@@ -321,8 +365,14 @@ namespace ApiRestRs.Controllers
         [HttpGet("")]
         [ActionName("lugSectImpre")]
         [EnableCors("MyCors")]
-        public IEnumerable<LugSectImpre> LugSectImpre()
+        public IEnumerable<LugSectImpre> LugSectImpre(IConfiguration configuration)
         {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
             List<LugSectImpre> lugSect = new();
             using (SqlConnection connection = new(con))
             {
@@ -352,6 +402,99 @@ namespace ApiRestRs.Controllers
                 connection.Close();
             }
             return lugSect;
+        }
+
+
+        [HttpGet("")]
+        [ActionName("mesa_formas")]
+        [EnableCors("MyCors")]
+        public IEnumerable<MesaForma> MesaForma(IConfiguration configuration)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
+            List<MesaForma> mesa = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_MesaFormas", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            MesaForma m = new MesaForma
+                            {
+                                idForma = Convert.ToInt32(reader["idForma"]),
+                                descripcion = reader["descripcion"].ToString()
+
+                            };
+
+                            mesa.Add(m);
+
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            return mesa;
+        }
+
+
+        [HttpGet("")]
+        [ActionName("mesas_objetos_plano")]
+        [EnableCors("MyCors")]
+        public IEnumerable<MesasObjetos> MesasObjetos(IConfiguration configuration)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
+            List<MesasObjetos> objetos = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_MesasObjetosPlano", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            MesasObjetos m = new MesasObjetos
+                            {
+                                idObjeto = Convert.ToInt32(reader["idObjeto"]),
+                                descripcion = reader["descripcion"].ToString(),
+                                forma = Convert.ToInt32(reader["forma"]),
+                                idSector = Convert.ToInt32(reader["idSector"]),
+                                color = reader["color"].ToString(),
+                                penColor = reader["penColor"].ToString(),
+                                brushStyle = Convert.ToInt32(reader["brushStyle"]),
+                                penStyle = Convert.ToInt32(reader["penStyle"]),
+                                posTop = Convert.ToInt32(reader["posTop"]),
+                                posLeft = Convert.ToInt32(reader["posLeft"]),
+                                width = Convert.ToInt32(reader["width"]),
+                                height = Convert.ToInt32(reader["height"]),
+                                puntasRedondeadas = Convert.ToBoolean(reader["puntasRedondeadas"])
+
+                            };
+
+                            objetos.Add(m);
+
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            return objetos;
         }
     }
 }
