@@ -385,10 +385,10 @@ namespace ApiRestRs.Controllers
             return obs;
         }
 
-        [HttpGet("{nroMesa}/{idDetalle}")]
+        [HttpGet("{nroMesa}/{idDetalle}/{idPedido}")]
         [ActionName("plato_info")]
         [EnableCors("MyCors")]
-        public IEnumerable<PlatoInfo> PlatoInfo(IConfiguration configuration, int nroMesa, int idDetalle)
+        public IEnumerable<PlatoInfo> PlatoInfo(IConfiguration configuration, int nroMesa, int idDetalle, int idPedido)
         {
             string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
             if (HeadDb != null)
@@ -405,7 +405,7 @@ namespace ApiRestRs.Controllers
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@nroMesa", nroMesa);
                     cmd.Parameters.AddWithValue("@idDetalle", idDetalle);
-
+                    cmd.Parameters.AddWithValue("@idPedido", idPedido);
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -436,10 +436,10 @@ namespace ApiRestRs.Controllers
 
         }
 
-        [HttpGet("{nroMesa}/{idDetalle}")]
+        [HttpGet("{nroMesa}/{idDetalle}/{idPedido}")]
         [ActionName("plato_info_gustos")]
         [EnableCors("MyCors")]
-        public IEnumerable<PlatoInfoGustos> PlatoInfoGustos(IConfiguration configuration, int nroMesa, int idDetalle)
+        public IEnumerable<PlatoInfoGustos> PlatoInfoGustos(IConfiguration configuration, int nroMesa, int idDetalle, int idPedido)
         {
             string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
             if (HeadDb != null)
@@ -455,7 +455,7 @@ namespace ApiRestRs.Controllers
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@nroMesa", nroMesa);
                     cmd.Parameters.AddWithValue("@idDetalle", idDetalle);
-
+                    cmd.Parameters.AddWithValue("@idPedido", idPedido);
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -477,10 +477,10 @@ namespace ApiRestRs.Controllers
 
         }
 
-        [HttpGet("{nroMesa}/{idDetalle}")]
+        [HttpGet("{nroMesa}/{idDetalle}/{idPedido}")]
         [ActionName("plato_info_combo")]
         [EnableCors("MyCors")]
-        public IEnumerable<PlatoInfoCombo> PlatoInfoCombo(IConfiguration configuration, int nroMesa, int idDetalle)
+        public IEnumerable<PlatoInfoCombo> PlatoInfoCombo(IConfiguration configuration, int nroMesa, int idDetalle, int idPedido)
         {
             string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
             if (HeadDb != null)
@@ -496,7 +496,7 @@ namespace ApiRestRs.Controllers
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@nroMesa", nroMesa);
                     cmd.Parameters.AddWithValue("@idDetalle", idDetalle);
-
+                    cmd.Parameters.AddWithValue("@idPedido", idPedido);
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -524,10 +524,10 @@ namespace ApiRestRs.Controllers
 
         }
 
-        [HttpGet("{nroMesa}/{idDetalle}")]
+        [HttpGet("{nroMesa}/{idDetalle}/{idPedido}")]
         [ActionName("plato_info_combo_gustos")]
         [EnableCors("MyCors")]
-        public IEnumerable<PlatoInfoComboGustos> PlatoInfoComboGustos(IConfiguration configuration, int nroMesa, int idDetalle)
+        public IEnumerable<PlatoInfoComboGustos> PlatoInfoComboGustos(IConfiguration configuration, int nroMesa, int idDetalle, int idPedido)
         {
             string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
             if (HeadDb != null)
@@ -543,7 +543,7 @@ namespace ApiRestRs.Controllers
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@nroMesa", nroMesa);
                     cmd.Parameters.AddWithValue("@idDetalle", idDetalle);
-
+                    cmd.Parameters.AddWithValue("@idPedido", idPedido);
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())

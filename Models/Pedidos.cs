@@ -49,7 +49,7 @@
         public int puntoDeVenta { get; set; }
         public bool delivery { get; set; }
         public int tipoDesc { get; set; }
-        public int descRec { get; set; }
+        public decimal descRec { get; set; }
     }
 
    public class FacturaCrear

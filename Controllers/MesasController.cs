@@ -276,10 +276,10 @@ namespace ApiRestRs.Controllers
         }
 
 
-        [HttpGet("{nromesa}/{agrupar}")]
+        [HttpGet("{nromesa}/{agrupar}/{idPedido}")]
         [ActionName("mesa_det")]
         [EnableCors("MyCors")]
-        public IEnumerable<MesaDet> MesaDet(IConfiguration configuration, int nromesa, int agrupar)
+        public IEnumerable<MesaDet> MesaDet(IConfiguration configuration, int nromesa, int agrupar, int idPedido)
         {
             string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
             if (HeadDb != null)
@@ -296,6 +296,7 @@ namespace ApiRestRs.Controllers
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@NroMesa", nromesa);
                     cmd.Parameters.AddWithValue("@Agrupar", agrupar);
+                    cmd.Parameters.AddWithValue("@idPedido", idPedido);
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())

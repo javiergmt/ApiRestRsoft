@@ -1,4 +1,6 @@
-﻿namespace ApiRestRs.Models
+﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+
+namespace ApiRestRs.Models
 {
     public class Clientes
     {
@@ -18,7 +20,7 @@
         public string? obs { get; set; }
         public decimal? credito { get; set; }
         public Boolean? bloquearCredito { get; set; }
-        public decimal? porcDesc { get; set; }  
+        public decimal? porcDesc { get; set; }
         public Boolean? aCtaCte { get; set; }
         public string? idTarjeta { get; set; }
         public bool? activo { get; set; }
@@ -26,9 +28,9 @@
         public decimal? perIbMinimo { get; set; }
         public decimal? perIbAlicuota { get; set; }
         public string? perIbTipo { get; set; }
-        public Boolean? autFactA { get; set; }   
+        public Boolean? autFactA { get; set; }
         public DateTime? vtoform8001 { get; set; }
-        
+
     }
 
     public class ClientesPedido
@@ -48,13 +50,13 @@
         public string? idTarjeta { get; set; }
 
     }
-    public class FormasDePago 
+    public class FormasDePago
     {
         public int idForma { get; set; }
         public int id { get; set; }
         public string? forma { get; set; }
         public int? orden { get; set; }
-     
+
     }
 
     public class CondicionIva
@@ -68,7 +70,7 @@
     {
         public int idZona { get; set; }
         public string? descripcion { get; set; }
-       
+
     }
 
     public class Repartidores
@@ -83,4 +85,32 @@
         public string? descripcion { get; set; }
 
     }
+
+    public class Turnos
+    {
+        public int idTurno { get; set; }
+        public string? descripcion { get; set; }
+        public string? horaDesde { get; set; }
+        public string? horaHasta { get; set; }
+    }
+
+    public class ParamDelivery 
+    {
+       public decimal MaxPorcDesc { get; set; }
+    public decimal EnvioDelivery { get; set; }
+    public bool DeliveryMostradorFacturar { get; set; }
+    public bool DeliveryClientesFacturar { get; set; }
+    public bool DeliveryImpAlGuardar { get; set; }
+    public bool DeliverySoloPlatosDelivery { get; set; }
+    public bool MesasNoPlatosDelivery { get; set; }
+    public int DeliveryDemorado { get; set; }
+    public int DeliveryMuyDemorado { get; set; }
+    public string? DeliveryColorDemorado { get; set; }
+    public string? DeliveryColorMuyDemorado { get; set; }
+    public decimal PorcDescPagoEfectivo { get; set; }
+    public int idMotivoDescPagoEfectivo { get; set; }
+    public bool AgruparPlatosIguales { get; set; }
+    public bool MostrarResumenDelivery { get; set; }
+
+  }
 }

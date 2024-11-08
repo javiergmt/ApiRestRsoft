@@ -86,8 +86,70 @@ namespace ApiRestRs.Controllers
 
         }
 
-
+        [HttpGet("{idPedido}")]
         
+        [ActionName("pedido_enc")]
+        [EnableCors("MyCors")]
+        public IEnumerable<PedEnc> PedEnc(IConfiguration configuration, int idPedido)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
+            List<PedEnc> pedido = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_PedidoEnc", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@idPedido", idPedido);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            PedEnc p = new PedEnc
+                            {
+                                idPedido = Convert.ToInt32(reader["idPedido"]),
+                                fecha = Convert.ToDateTime(reader["fecha"]),
+                                hora = reader["hora"].ToString(),
+                                idCliente = Convert.ToInt32(reader["idCliente"]),
+                                fechaEntrega = Convert.ToDateTime(reader["fechaEntrega"]),
+                                horaEntrega = reader["horaEntrega"].ToString(),
+                                subtotal = Convert.ToDecimal(reader["subtotal"]),
+                                descuento = Convert.ToDecimal(reader["descuento"]),
+                                total = Convert.ToDecimal(reader["total"]),
+                                envio = Convert.ToDecimal(reader["envio"]),
+                                pago = Convert.ToDecimal(reader["pago"]),
+                                pagaCon = Convert.ToDecimal(reader["pagaCon"]),
+                                obs = reader["obs"].ToString(),
+                                idRepartidor = Convert.ToInt32(reader["idRepartidor"]),
+                                nombreClie = reader["nombreClie"].ToString(),
+                                direccionClie = reader["direccionClie"].ToString(),
+                                enUso = Convert.ToBoolean(reader["enUso"]),
+                                Cobrado = Convert.ToBoolean(reader["Cobrado"]),
+                                xMostrador = Convert.ToBoolean(reader["xMostrador"]),
+                                idUsuario = Convert.ToInt32(reader["idUsuario"]),
+                                puntoDeVenta = Convert.ToInt32(reader["puntoDeVenta"]),
+                                delivery = Convert.ToBoolean(reader["delivery"]),
+                                tipoDesc = Convert.ToInt32(reader["tipoDesc"]),
+                                descRec = Convert.ToDecimal(reader["descRec"])
+                            };
+                            
+                            pedido.Add(p);
+
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            return pedido;
+
+        }
+
 
 
     } // Fin de la clase PedidosController

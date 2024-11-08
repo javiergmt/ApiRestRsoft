@@ -298,5 +298,105 @@ namespace ApiRestRs.Controllers
 
         }
 
+        [HttpGet("")]
+        [ActionName("turnos")]
+        [EnableCors("MyCors")]
+        public IEnumerable<Turnos> Turnos(IConfiguration configuration)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
+            List<Turnos> turnos = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_Turnos", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Turnos t = new Turnos
+                            {
+                                idTurno = Convert.ToInt32(reader["idTurno"]),
+                                descripcion = reader["Descripcion"].ToString(),
+                                horaDesde = reader["horaDesde"].ToString(),
+                                horaHasta = reader["horaHasta"].ToString()
+                            };
+
+                            turnos.Add(t);
+
+                        }
+                    }
+                }
+                connection.Close();
+
+            }
+            return turnos;
+
+        }
+
+
+        [HttpGet("")]
+        [ActionName("param_delivery")]
+        [EnableCors("MyCors")]
+        public IEnumerable<ParamDelivery> ParamDelivery(IConfiguration configuration)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
+            List<ParamDelivery> param = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_ParamDelivery", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ParamDelivery p = new ParamDelivery
+                            {
+                                MaxPorcDesc = Convert.ToDecimal(reader["maxPorcDesc"]),
+                                EnvioDelivery = Convert.ToDecimal(reader["envioDelivery"]),
+                                DeliveryMostradorFacturar = Convert.ToBoolean(reader["deliveryMostradorFacturar"]),
+                                DeliveryClientesFacturar = Convert.ToBoolean(reader["deliveryClientesFacturar"]),
+                                DeliveryImpAlGuardar = Convert.ToBoolean(reader["deliveryImpAlGuardar"]),
+                                DeliverySoloPlatosDelivery = Convert.ToBoolean(reader["deliverySoloPlatosDelivery"]),
+                                MesasNoPlatosDelivery = Convert.ToBoolean(reader["mesasNoPlatosDelivery"]),
+                                DeliveryDemorado = Convert.ToInt32(reader["deliveryDemorado"]),
+                                DeliveryMuyDemorado = Convert.ToInt32(reader["deliveryMuyDemorado"]),
+                                DeliveryColorDemorado = reader["deliveryColorDemorado"].ToString(),
+                                DeliveryColorMuyDemorado = reader["deliveryColorMuyDemorado"].ToString(),
+                                PorcDescPagoEfectivo = Convert.ToDecimal(reader["porcDescPagoEfectivo"]),
+                                idMotivoDescPagoEfectivo = Convert.ToInt32(reader["idMotivoDescPagoEfectivo"]),
+                                AgruparPlatosIguales = Convert.ToBoolean(reader["agruparPlatosIguales"]),
+                                MostrarResumenDelivery = Convert.ToBoolean(reader["mostrarResumenDelivery"])
+
+
+                            };
+
+                            param.Add(p);
+
+                        }
+                    }
+                }
+                connection.Close();
+
+            }
+            return param;
+
+        }
+
     } // Fin de la clase TablasAuxController
 } // fin del namespace ApiRestRs.Controllers
