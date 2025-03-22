@@ -49,6 +49,7 @@ namespace ApiRestRs.Controllers
                     cmd.Parameters.AddWithValue("@confirmada", r.confirmada);
                     cmd.Parameters.AddWithValue("@cumplida", r.cumplida);
                     cmd.Parameters.AddWithValue("@usuario", r.usuario);
+                    cmd.Parameters.AddWithValue("@email", r.email);
 
 
                     try
@@ -85,6 +86,44 @@ namespace ApiRestRs.Controllers
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@idReserva", r.idReserva);
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        connection.Close();
+                        return new JsonResult(new { res = "OK" });
+                    }
+                    catch (Exception ex)
+                    {
+                        connection.Close();
+                        return new JsonResult(new { res = ex });
+                    }
+
+
+                }
+            }
+        }
+
+        [HttpPost]
+        [Route("reserva_conf_cump")]
+        [EnableCors("MyCors")]
+        public ActionResult Post(IConfiguration configuration, [FromBody] ReservaConfCump r)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spP_ReservaConfCump", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@idReserva", r.idReserva);
+                    cmd.Parameters.AddWithValue("@confirmada", r.confirmada);
+                    cmd.Parameters.AddWithValue("@cumplida", r.cumplida);
 
                     try
                     {

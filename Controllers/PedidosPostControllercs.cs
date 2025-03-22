@@ -20,6 +20,21 @@ namespace ApiRestRs.Controllers
         }
 
         [HttpPost]
+        [Route("mesa_det_mult_noimp")]
+        [EnableCors("MyCors")]
+        public ActionResult Post(IConfiguration configuration, [FromBody] EnMesaDetMult m)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
+            return Imprimir.GrabarMulti(m, con, false);
+
+        }
+
+        [HttpPost]
         [Route("pedido_nuevo")]
         [EnableCors("MyCors")]
         public ActionResult Post(IConfiguration configuration, [FromBody] PedEnc p)

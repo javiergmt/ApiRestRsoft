@@ -343,6 +343,49 @@ namespace ApiRestRs.Controllers
 
 
         [HttpGet("")]
+        [ActionName("mensajes_comanda")]
+        [EnableCors("MyCors")]
+        public IEnumerable<MensajesComanda> MensajesComandas(IConfiguration configuration)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
+            List<MensajesComanda> mensajesComanda = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_MensajesComanda", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            MensajesComanda m = new MensajesComanda
+                            {
+                                idMensaje = Convert.ToInt32(reader["idMensaje"]),
+                                descripcion = reader["Descripcion"].ToString(),
+                                orden = Convert.ToInt32(reader["orden"]),
+                                nroMesa = Convert.ToInt32(reader["nroMesa"])
+                            };
+
+                            mensajesComanda.Add(m);
+
+                        }
+                    }
+                }
+                connection.Close();
+
+            }
+            return mensajesComanda;
+
+        }
+
+        [HttpGet("")]
         [ActionName("param_delivery")]
         [EnableCors("MyCors")]
         public IEnumerable<ParamDelivery> ParamDelivery(IConfiguration configuration)

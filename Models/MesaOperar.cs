@@ -3,7 +3,7 @@
     public class MesaOperar
     {
         public int NroMesa { get; set; }
-
+        public int idMozo { get; set; }
     }
     public class MesaDesbloquear
     {
@@ -80,7 +80,12 @@
         public string? idIva { get; set; }
         public string? tarjeta { get; set; }
     }
-    public class MesaRenglonBorrar
+
+    public class MesaCerrarMozo
+    {
+        public int nroMesa { get; set; }
+    }
+        public class MesaRenglonBorrar
     {
         public int nroMesa { get; set; }
         public int idDetalle { get; set; }
@@ -204,6 +209,35 @@
     {
         public int idObjeto { get; set; }
 
+    }
+
+    public class comandaGustos
+    {
+        public string? descripcion { get; set; }
+       
+    }
+
+    public class comandaPlatos
+    {
+        public float cant { get; set; }
+        public string? idTipoConsumo { get; set; }
+        public string? descripcion { get; set; }
+        public int idSectorExped { get; set; }
+        public int impCentralizada { get; set; }
+        public string? obs { get; set; }
+        public string? tamanio { get; set; }
+        public bool esEntrada { get; set; }
+        public List<comandaGustos>? gustos { get; set; }
+    }
+
+    public class comanda
+    {
+        public int nroMesa { get; set; }
+        public int idMozo { get; set; }
+        public string? nombreMozo { get; set; }
+        public int comensales { get; set; }
+        public DateTime fechaHora { get; set; }
+        public List<comandaPlatos>? platos { get; set; }
     }
 }
 

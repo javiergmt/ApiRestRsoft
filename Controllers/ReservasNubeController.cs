@@ -18,10 +18,10 @@ namespace ApiRestRs.Controllers
             con = configuration.GetConnectionString("conexion") + " Database = " + HeaderBD + "; Password=6736";
         }
 
-        [HttpGet("{idResto}")]
+        [HttpGet("{idResto}/{idOper}")]
         [ActionName("reservas_nube")]
         [EnableCors("MyCors")]
-        public IEnumerable<Reservas_Nube> Reservas(IConfiguration configuration, int idResto)
+        public IEnumerable<Reservas_Nube> Reservas(IConfiguration configuration, int idResto, int idOper)
         {
           
             List<Reservas_Nube> reservas = new();
@@ -40,7 +40,15 @@ namespace ApiRestRs.Controllers
                 {
 
                     cmd.Parameters.Clear();
-                    cmd.CommandText = "Select * From Reservas Where idResto = @idResto";
+                    if (idOper == 0)
+                    {
+                        cmd.CommandText = "Select * From Reservas Where idResto = @idResto";
+                    }
+                    else
+                    {
+                        cmd.CommandText = "Select * From Reservas Where idResto = @idResto and aceptada = 1 and descargada = 0";
+                       
+                    }
                     cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idResto", Value = idResto });
 
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -70,6 +78,16 @@ namespace ApiRestRs.Controllers
                         }
 
                     }
+                    if (idOper == 1 && reservas.Count > 0 )
+                    {
+                        cmd.Parameters.Clear();
+                        cmd.CommandText = "Update Reservas Set descargada = 1 Where idResto = @idResto and aceptada = 1 and descargada = 0";
+                        cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idResto", Value = idResto });
+
+                        cmd.ExecuteNonQuery();
+                    }
+                   
+                   
                     transaction.Commit();
                     connection.Close();
                     return reservas;
@@ -130,6 +148,7 @@ namespace ApiRestRs.Controllers
                         }
 
                     }
+
                     transaction.Commit();
                     connection.Close();
                     return bloqueos;
@@ -205,10 +224,10 @@ namespace ApiRestRs.Controllers
 
         }
 
-        [HttpGet("{idResto}")]
+        [HttpGet("{idResto}/{idShow}")]
         [ActionName("shows_nube")]
         [EnableCors("MyCors")]
-        public IEnumerable<Shows_Nube> Shows(IConfiguration configuration, int idResto)
+        public IEnumerable<Shows_Nube> Shows(IConfiguration configuration, int idResto, int idShow)
         {
 
             List<Shows_Nube> shows = new();
@@ -227,8 +246,9 @@ namespace ApiRestRs.Controllers
                 {
 
                     cmd.Parameters.Clear();
-                    cmd.CommandText = "Select * From Shows Where idResto = @idResto";
+                    cmd.CommandText = "Select * From Shows Where (@idResto = idResto) and (@idShow = 0 or @idShow = idShow) ";
                     cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idResto", Value = idResto });
+                    cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idShow", Value = idShow });
 
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -239,9 +259,11 @@ namespace ApiRestRs.Controllers
                                 idResto = Convert.ToInt32(reader["idResto"]),
                                 idShow = Convert.ToInt32(reader["idShow"]),
                                 fecha = Convert.ToDateTime(reader["fecha"]),
+                                titulo = reader["titulo"].ToString(),
                                 descripcion = reader["descripcion"].ToString(),
                                 imagen = reader["imagen"].ToString(),
                                 hsAnticipacion = Convert.ToInt32(reader["hsAnticipacion"]),
+                                idTurno = Convert.ToInt32(reader["idTurno"]),
 
                             };
                             shows.Add(r);
@@ -265,10 +287,10 @@ namespace ApiRestRs.Controllers
         }
     
 
-        [HttpGet("")]
+        [HttpGet("{idResto}")]
         [ActionName("resto_nube")]
         [EnableCors("MyCors")]
-        public IEnumerable<Resto_Nube> Resto_Nube(IConfiguration configuration)
+        public IEnumerable<Resto_Nube> Resto_Nube(IConfiguration configuration, int idResto)
         {
 
             List<Resto_Nube> resto = new();
@@ -287,7 +309,10 @@ namespace ApiRestRs.Controllers
                 {
 
                     cmd.Parameters.Clear();
-                    cmd.CommandText = "Select * From Resto";
+                    cmd.CommandText = "Select * From Resto Where ( @idResto=0) OR (@idResto = idResto)";
+                    cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idResto", Value = idResto });
+
+
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())

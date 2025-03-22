@@ -80,6 +80,7 @@
         public decimal Importe { get; set; }
         public string? Descripcion { get; set; }
         public char Cocido { get; set; }
+        public string? idTipoConsumo { get; set; }
     }
 
 

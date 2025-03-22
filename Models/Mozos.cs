@@ -44,7 +44,7 @@
         public int idPagWeb { get; set; }
         public string? NombreWeb { get; set; }
         public int? sector_ini { get; set; }
-
+        public string? DescripCub { get; set; }
 
     }
     public class StProcs

@@ -45,7 +45,8 @@ namespace ApiRestRs.Controllers
                                 idTurno = Convert.ToInt32(reader["idTurno"]),
                                 descripcion = reader["descripcion"].ToString(),
                                 horaDesde = reader["horaDesde"].ToString(),
-                                horaHasta = reader["horaHasta"].ToString()
+                                horaHasta = reader["horaHasta"].ToString(),
+                                intervaloMin = Convert.ToInt32(reader["minOcup"])
 
 
                             };
@@ -60,10 +61,10 @@ namespace ApiRestRs.Controllers
             return turnos;
         }
 
-        [HttpGet("{fecha}")]
+        [HttpGet("{fecha}/{fechaHasta}/{idTurno}")]
         [ActionName("reservas")]
         [EnableCors("MyCors")]
-        public IEnumerable<Reservas> Reservas(IConfiguration configuration, DateTime fecha)
+        public IEnumerable<Reservas> Reservas(IConfiguration configuration, DateTime fecha, DateTime fechaHasta ,int idTurno)
         {
             string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
             if (HeadDb != null)
@@ -78,6 +79,8 @@ namespace ApiRestRs.Controllers
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@fecha", fecha);
+                    cmd.Parameters.AddWithValue("@fechaHasta", fechaHasta);
+                    cmd.Parameters.AddWithValue("@idTurno", idTurno);
 
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -102,7 +105,9 @@ namespace ApiRestRs.Controllers
                                 nombreClie = reader["nombreClie"].ToString(),
                                 confirmada = Convert.ToBoolean(reader["confirmada"]),
                                 cumplida = Convert.ToBoolean(reader["cumplida"]),
-                                usuario = reader["usuario"].ToString()
+                                usuario = reader["usuario"].ToString(),
+                                email = reader["email"].ToString()
+
 
                             };
                             reservas.Add(r);

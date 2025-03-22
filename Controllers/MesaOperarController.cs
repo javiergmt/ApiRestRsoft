@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 //using System.Drawing;
 
 namespace ApiRestRs.Controllers
@@ -16,6 +17,7 @@ namespace ApiRestRs.Controllers
         public string? con;
 
         public object? PrinterSettings { get; private set; }
+        public object Grabar { get; private set; }
 
         public MesaOperarController(IConfiguration configuration)
         {
@@ -41,6 +43,7 @@ namespace ApiRestRs.Controllers
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@NroMesa", m.NroMesa);
+                    cmd.Parameters.AddWithValue("@idMozo", m.idMozo);
                     try
                     {
                         cmd.ExecuteNonQuery();
@@ -456,237 +459,10 @@ namespace ApiRestRs.Controllers
                 con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
             }
 
-            using (SqlConnection connection = new(con))
-            {
-                connection.Open();
-                SqlCommand command = connection.CreateCommand();
+            return Imprimir.GrabarMulti(m, con, true);
 
-                SqlTransaction transaction;
-
-                // Start a local transaction.
-                transaction = connection.BeginTransaction();
-                command.Transaction = transaction;
-                                       
-
-                if (m.MesaDetM != null)
-                {
-                    try
-                    {
-
-                        foreach (var Mdet in m.MesaDetM)
-                        {
-                            command.Parameters.Clear();
-
-                            // Grabo detalle en MesaDet o PedDet
-                            // Si idMozo = 0 es pedido
-                            // y en nroMesa viene el idPedido
-
-                            if (Mdet.idMozo == 0)
-                            {
-                                command.CommandText =
-                                "Insert into PedDet (idPedido, idDetalle ,idPlato, cant, pcioUnit, obs, idTamanio, " +
-                                " procesado, hora, idUsuario, cocinado, descripcion, fechaHora) " +
-                                " VALUES(@nroMesa, @idDetalle, @idPlato, @cant, @pcioUnit, @obs, @idTamanio, " +
-                                " @procesado, @hora, @idUsuario, @cocinado,@descripcion, @fechaHora) ";
-                            }
-                            else
-                            {
-                                command.CommandText =
-                                "Insert into En_MesaDet (nroMesa, idDetalle,idPlato,cant,pcioUnit,importe,obs,idTamanio," +
-                                "tamanio, procesado, hora, idMozo, idUsuario, cocinado, esEntrada, descripcion," +
-                                "fechaHora, comanda) " +
-                                " VALUES(@nroMesa, @idDetalle, @idPlato, @cant, @pcioUnit, @importe, @obs, @idTamanio, " +
-                                "@tamanio, @procesado, @hora, @idMozo, @idUsuario, @cocinado, @esEntrada, @descripcion," +
-                                "@fechaHora, @comanda) ";
-                            }
-                            
-                            
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@nroMesa", Value = Mdet.nroMesa });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idDetalle", Value = Mdet.idDetalle });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idPlato", Value = Mdet.idPlato });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@cant", Value = Mdet.cant });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@pcioUnit", Value = Mdet.pcioUnit });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@importe", Value = Mdet.importe });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@obs", Value = Mdet.obs });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idTamanio", Value = Mdet.idTamanio });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@tamanio", Value = Mdet.tamanio });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@procesado", Value = Mdet.procesado });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@hora", Value = Mdet.hora });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idMozo", Value = Mdet.idMozo });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idUsuario", Value = Mdet.idUsuario });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@cocinado", Value = Mdet.cocinado });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@esEntrada", Value = Mdet.esEntrada });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@descripcion", Value = Mdet.descripcion });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@fechaHora", Value = Mdet.fechaHora });
-                            command.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@comanda", Value = Mdet.comanda });
-
-                            command.ExecuteNonQuery();
-
-                            if (Mdet.Gustos != null)
-                            {
-                                foreach (var Mgus in Mdet.Gustos)
-                                {
-                                    // Grabo gustos en En_MesaDet_Gustos
-                                    // o PedDet_Gustos
-
-                                    if (Mdet.idMozo == 0)
-                                    {
-                                        command.CommandText =
-                                        "Insert into PedDet_Gustos (idPedido, idDetalle, idGusto) " +
-                                         "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + Mgus.idGusto + ")";
-                                    }
-                                    else
-                                    {
-                                        command.CommandText =
-                                      "Insert into En_MesaDet_Gustos (NroMesa, IdDetalle,idGusto, Descripcion) " +
-                                      "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + Mgus.idGusto +
-                                      ", '" + Mgus.descripcion + "')";
-                                    }
-                                    
-
-                                    command.ExecuteNonQuery();
-                                };
-                            }
-
-                            if (Mdet.Combos != null)
-                            {
-                                foreach (var MCom in Mdet.Combos)
-                                {
-                                    // Grabo combos en En_MesaDet_Combos
-                                    // o PedDet_Combos
-                                    if (Mdet.idMozo == 0)
-                                    {
-                                        command.CommandText =
-                                        "Insert into PedDet_Combos (idPedido, idDetalle, idSeccion, idPlato, Cant," +
-                                        " Procesado, IdTamanio, Obs, Cocinado, FechaHora) " +
-                                        "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + MCom.idSeccion + "," +
-                                        MCom.idPlato + ", " + MCom.cant + ",'" + MCom.procesado + "'," + MCom.idTamanio +
-                                        ",'" + MCom.obs + "','" + MCom.cocinado + "','" + MCom.fechaHora + "' )";
-                                    }
-                                    else
-                                    {
-                                        command.CommandText =
-                                        "Insert into En_MesaDet_Combos (NroMesa, IdDetalle,idSeccion, idPlato," +
-                                        "Cant,Procesado,IdTamanio,Obs,Cocinado,FechaHora,Comanda) " +
-                                        "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + MCom.idSeccion + "," +
-                                         MCom.idPlato + ", " + MCom.cant + ",'" + MCom.procesado + "'," + MCom.idTamanio +
-                                         ",'" + MCom.obs + "','" + MCom.cocinado + "','" + MCom.fechaHora + "','" +
-                                         MCom.comanda + "')";
-                                    }
-                    
-                                    command.ExecuteNonQuery();
-
-                                    if (MCom.CombosGustos != null)
-                                    {
-                                        foreach (var MComGust in MCom.CombosGustos)
-                                        {
-                                            // Grabo combos gustos en En_MesaDet_Combos_Gustos
-                                            // o PedDet_Combos_Gustos
-                                            if (Mdet.idMozo == 0)
-                                            {
-                                                command.CommandText =
-                                                "Insert into PedDet_Combos_Gustos (idPedido, idDetalle, idSeccion, idPlato, idGusto) " +
-                                                "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + MComGust.idSeccion +
-                                                "," + MComGust.idPlato + "," + MComGust.idGusto + ")";
-                                            }
-                                            else
-                                            {
-                                                command.CommandText =
-                                                "Insert into En_MesaDet_Combos_Gustos (NroMesa, IdDetalle,idSeccion,idPlato,idGusto) " +
-                                                "VALUES (" + Mdet.nroMesa + "," + Mdet.idDetalle + "," + MComGust.idSeccion +
-                                                "," + MComGust.idPlato + "," + MComGust.idGusto + ")";
-                                            }
-                                            command.ExecuteNonQuery();
-                                        };
-                                    }
-                                };
-                            }
-                           
-                        }
-                        transaction.Commit();
-                        Imprimir.ImprimirComanda( m ,con);
-                        
-                        connection.Close();
-                        return new JsonResult(new { res = 0, mensaje = "commit" });
-                    }
-                    catch (Exception ex)
-                    {
-                        //Console.WriteLine("Commit Exception Type: {0}", ex.GetType());
-                        //Console.WriteLine("  Message: {0}", ex.Message);
-
-                        // Attempt to roll back the transaction.
-                        try
-                        {
-                            transaction.Rollback();
-                            connection.Close();
-                            return new JsonResult(new { res = 1, mensaje = "rollback: "+ex.Message });
-                        }
-                        catch (Exception ex2)
-                        {
-                            // This catch block will handle any errors that may have occurred
-                            // on the server that would cause the rollback to fail, such as
-                            // a closed connection.
-                            //Console.WriteLine("Rollback Exception Type: {0}", ex2.GetType());
-                            //Console.WriteLine("  Message: {0}", ex2.Message);
-                            connection.Close();
-                            return new JsonResult(new { res = -1, mensaje = "error: "+ex2.Message });
-                        }
-                    }
-                }
-                connection.Close();
-                return new JsonResult(new { res = 0, mensaje = "vacio" });
-            }
-           
         }
-
-     
-        [HttpPost]
-        [Route("grabaMensaje")]
-        [EnableCors("MyCors")]
-        public ActionResult Post(IConfiguration configuration, [FromBody] MensXcomanda m)
-        {
-            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
-            if (HeadDb != null)
-            {
-                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
-            }
-
-            using (SqlConnection connection = new(con))
-            {
-                connection.Open();
-                using (SqlCommand cmd = new("spP_GrabaMensaje", connection))
-                {
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@descripcion", m.descripcion);
-                    cmd.Parameters.AddWithValue("@idMozo", m.idMozo);
-                    cmd.Parameters.AddWithValue("@idUsuario", m.idUsuario);
-                    cmd.Parameters.AddWithValue("@nroMesa", m.nroMesa);
-
-                    try
-                    {
-                        cmd.ExecuteNonQuery();
-                        string descNom = "";
-                        if (m.idMozo != 0) {
-                            descNom = "Mozo: " + m.nombre ;
-                        }
-                        if (m.idUsuario != 0)
-                        {
-                            descNom = "Usuario: " + m.nombre;
-                        }
-                        Imprimir.ImprimirMensaje(m.idSectorExped, m.idImpresora,m.descripcion,descNom,con);
-                        connection.Close();
-                        return new JsonResult(new { res = "OK" });
-                    }
-                    catch (Exception ex)
-                    {
-                        connection.Close();
-                        return new JsonResult(new { res = ex });
-                    }
-                }
-                
-            }
-            
-        }
+    
 
         [HttpPost]
         [Route("actIconoRubro")]
@@ -760,6 +536,44 @@ namespace ApiRestRs.Controllers
                     cmd.Parameters.AddWithValue("@idIva", m.idIva);
                     cmd.Parameters.AddWithValue("@cuit", m.cuit);
                     cmd.Parameters.AddWithValue("@tarjeta", m.tarjeta);
+
+                    try
+                    {
+                        //Imprimir.ImprimirAceptacion(m, con);
+                        cmd.ExecuteNonQuery();
+                        connection.Close();
+                        return new JsonResult(new { res = "OK", mesa = m.nroMesa });
+                    }
+                    catch (Exception ex)
+                    {
+                        connection.Close();
+                        return new JsonResult(new { res = ex });
+                    }
+
+
+                }
+            }
+        }
+
+        [HttpPost]
+        [Route("mesa_cerrar_mozo")]
+        [EnableCors("MyCors")]
+        public ActionResult Post(IConfiguration configuration, [FromBody] MesaCerrarMozo m)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spP_MesaCerrarMozo", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@nroMesa", m.nroMesa);
+                    
 
                     try
                     {
@@ -901,6 +715,71 @@ namespace ApiRestRs.Controllers
 
                 }
             }
+        }
+
+        [HttpPost]
+        [Route("comandar")]
+        [EnableCors("MyCors")]
+        public ActionResult Post(IConfiguration configuration, [FromBody] comanda c)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+           
+            if (c.platos != null)
+            {
+                Imprimir.ImprimirComanda2(c, con);
+            }
+        
+            return new JsonResult(new { res = 0, mensaje = "comandado" });
+
+
+        }
+
+        [HttpPost]
+        [Route("graba_mensaje")]
+        [EnableCors("MyCors")]
+        public ActionResult Post(IConfiguration configuration, [FromBody] MensXcomanda c)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spP_GrabaMensaje", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@descripcion", c.descripcion);
+                    cmd.Parameters.AddWithValue("@idMozo", c.idMozo);
+                    cmd.Parameters.AddWithValue("@idUsuario", c.idUsuario);
+                    cmd.Parameters.AddWithValue("@nroMesa", c.nroMesa);
+
+
+                    Imprimir.ImprimirMensaje(c.idSectorExped, c.idImpresora, c.descripcion, c.nroMesa, c.nombre, con);
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        connection.Close();
+                        return new JsonResult(new { res = "OK", mesa = c.nroMesa });
+                    }
+                    catch (Exception ex)
+                    {
+                        connection.Close();
+                        return new JsonResult(new { res = ex });
+                    }
+
+
+                }
+            }
+
+
+
         }
 
     } // Fin de la clase

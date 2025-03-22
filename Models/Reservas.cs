@@ -19,6 +19,7 @@
         public bool? confirmada { get; set; }
         public bool? cumplida { get; set; }
         public string? usuario { get; set; }
+        public string? email { get; set; }
 
     }
 
@@ -38,6 +39,7 @@
         public bool? confirmada { get; set; }
         public bool? cumplida { get; set; }
         public string? usuario { get; set; }
+        public string? email { get; set; }
 
     }
 
@@ -47,6 +49,7 @@
         public string? descripcion { get; set; }
         public string? horaDesde { get; set; }
         public string? horaHasta { get; set; }
+        public int intervaloMin { get; set; }
     }
 
     public class ReservaBorrar
@@ -54,6 +57,14 @@
         public int idReserva { get; set; }
 
     }
+
+    public class ReservaConfCump
+    {
+        public int idReserva { get; set; }
+        public bool confirmada { get; set; }
+        public bool cumplida { get; set; }
+    }
+   
 
     public class Reservas_Nube
     {
@@ -90,6 +101,7 @@
         public string? horaDesde { get; set; }
         public string? horaHasta { get; set; }
         public int intervaloMin { get; set; }
+        
     }
 
     public class Shows_Nube
@@ -97,9 +109,11 @@
         public int idResto { get; set; }
         public int idShow { get; set; }
         public DateTime? fecha { get; set; }
+        public string? titulo { get; set; }
         public string? descripcion { get; set; }
         public string? imagen { get; set; }
         public int hsAnticipacion { get; set; }
+        public int idTurno { get; set; }
     }
 
     public class Resto_Nube

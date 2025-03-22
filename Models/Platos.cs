@@ -23,7 +23,9 @@
         public int IdPlato { get; set; }
         public int IdGusto { get; set; }
         public string? DescGusto { get; set; }
-        
+        public int idPlatoRel { get; set; }
+
+
     }
     public class PlatosTamanios
     {
@@ -85,6 +87,7 @@
         public decimal cant { get; set; }
         public string? descripcion { get; set; }
         public int idSeccion { get; set; }
+        public string? descSeccion { get; set; }
         public int idTamanio { get; set; }
         public int cantGustos { get; set; }
         public string? idTipoConsumo { get; set; }
@@ -94,9 +97,11 @@
     public class PlatoInfoComboGustos
     {
         public int idPlato { get; set; }
-        public string? descGusto { get; set; }
+        public string? descripcion { get; set; }
         public int idSeccion { get; set; }
         public int idGusto { get; set; }
+
+       
 
     }
     public class ObsRenglones

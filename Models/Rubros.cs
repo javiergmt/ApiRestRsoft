@@ -7,6 +7,7 @@
         public int? Orden { get; set; }
         public char? Visualizacion { get; set; }
         public string? iconoApp { get; set; }
+        public string? Prefijo { get; set; }
     }
     public class Subrubros
     {
@@ -24,6 +25,7 @@
         public int Orden { get; set; }
         public char Visualizacion { get; set; }
         public string? iconoApp { get; set; }
+        public string? Prefijo { get; set; }
         public List<Subrubros>? Subrubros { get; set; }
     }
 

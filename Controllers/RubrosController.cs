@@ -51,7 +51,8 @@ namespace ApiRestRs.Controllers
                                 Descripcion = reader["Descripcion"].ToString(),
                                 Orden = Convert.ToInt32(reader["Orden"]),
                                 Visualizacion = Convert.ToChar(reader["Visualizacion"]),
-                                iconoApp = reader["iconoApp"].ToString()
+                                iconoApp = reader["iconoApp"].ToString(),
+                                Prefijo = reader["Prefijo"].ToString()
                             };
                             rubros.Add(r);
 
@@ -139,8 +140,9 @@ namespace ApiRestRs.Controllers
                                 Descripcion = reader["Descripcion"].ToString(),
                                 Orden = Convert.ToInt32(reader["Orden"]),
                                 Visualizacion = Convert.ToChar(reader["Visualizacion"]),
-                                iconoApp = reader["iconoApp"].ToString()
-                                                    
+                                iconoApp = reader["iconoApp"].ToString(),
+                                Prefijo = reader["Prefijo"].ToString()
+
                             };
 
                             int nRubro = Convert.ToInt32(reader["idRubro"]);

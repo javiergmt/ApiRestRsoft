@@ -102,8 +102,8 @@ namespace ApiRestRs.Controllers
                             {
                                 IdPlato = Convert.ToInt32(reader["IdPlato"]),
                                 IdGusto = Convert.ToInt32(reader["IdGusto"]),
-                                DescGusto = reader["DescGusto"].ToString()
-
+                                DescGusto = reader["DescGusto"].ToString(),
+                                idPlatoRel = Convert.ToInt32(reader["IdPlatoRel"])
                             };
                             platosgustos.Add(p);
 
@@ -507,6 +507,7 @@ namespace ApiRestRs.Controllers
                                 cant = Convert.ToDecimal(reader["Cant"]),
                                 descripcion = reader["Descripcion"].ToString(),
                                 idSeccion = Convert.ToInt32(reader["idSeccion"]),
+                                descSeccion = reader["descSeccion"].ToString(),
                                 idTamanio = Convert.ToInt32(reader["IdTamanio"]),
                                 cantGustos = Convert.ToInt32(reader["CantGustos"]),
                                 idTipoConsumo = reader["idTipoConsumo"].ToString()
@@ -551,7 +552,7 @@ namespace ApiRestRs.Controllers
                             PlatoInfoComboGustos p = new PlatoInfoComboGustos
                             {
                                 idPlato = Convert.ToInt32(reader["idPlato"]),
-                                descGusto = reader["DescGusto"].ToString(),
+                                descripcion = reader["DescGusto"].ToString(),
                                 idSeccion = Convert.ToInt32(reader["idSeccion"]),
                                 idGusto = Convert.ToInt32(reader["IdGusto"])
 

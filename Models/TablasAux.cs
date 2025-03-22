@@ -113,4 +113,13 @@ namespace ApiRestRs.Models
     public bool MostrarResumenDelivery { get; set; }
 
   }
+  public class MensajesComanda
+  {
+        public int idMensaje { get; set; }
+        public string? descripcion { get; set; }
+        public int orden { get; set; }
+        public int nroMesa { get; set; }
+  }
+
+
 }

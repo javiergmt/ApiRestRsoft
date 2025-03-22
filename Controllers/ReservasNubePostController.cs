@@ -105,19 +105,20 @@ namespace ApiRestRs.Controllers
                 SqlCommand cmd = connection.CreateCommand();
                 cmd.Parameters.Clear();
                 if (r.idShow == 0)
-                    cmd.CommandText = "Insert Into Shows(idResto ,fecha, descripcion,imagen,hsAnticipacion) " +
-                    " VALUES( @idResto, @fecha, @descripcion, @imagen, @hsAnticipacion )";
+                    cmd.CommandText = "Insert Into Shows(idResto ,fecha, titulo, descripcion,imagen,hsAnticipacion, idTurno) " +
+                    " VALUES( @idResto, @fecha, @titulo, @descripcion, @imagen, @hsAnticipacion, @idTurno )";
                 else
-                    cmd.CommandText = "Update Shows set idResto = @idResto, fecha = @fecha, descripcion = @descripcion " +
-                        ", imagen = @imagen, hsAnticipacion = @hsAnticipacion where idShow = @idShow";
+                    cmd.CommandText = "Update Shows set idResto = @idResto, fecha = @fecha, titulo = @titulo, descripcion = @descripcion " +
+                        ", imagen = @imagen, hsAnticipacion = @hsAnticipacion, idTurno = @idTurno where idShow = @idShow";
               
                 cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idShow", Value = r.idShow });
                 cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idResto", Value = r.idResto });
                 cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@fecha", Value = r.fecha });
+                cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@titulo", Value = r.titulo });
                 cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@descripcion", Value = r.descripcion });
                 cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@imagen", Value = r.imagen });
                 cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@hsAnticipacion", Value = r.hsAnticipacion });
-
+                cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter() { ParameterName = "@idTurno", Value = r.idTurno });
                 cmd.ExecuteNonQuery();
 
                 connection.Close();

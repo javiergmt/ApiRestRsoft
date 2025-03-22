@@ -19,6 +19,8 @@ namespace ApiRestRs.Controllers
             con = configuration.GetConnectionString("conexion") + " Database = " + HeaderBD + "; Password=6736";
         }
 
+        
+
 
         [HttpGet("{count}/{idsector}")]
         [ActionName("mesas")]
@@ -310,7 +312,8 @@ namespace ApiRestRs.Controllers
                                 PcioUnit = Convert.ToDecimal(reader["PcioUnit"]),
                                 Importe = Convert.ToDecimal(reader["Importe"]),
                                 Descripcion = reader["Descripcion"].ToString(),
-                                Cocido = Convert.ToChar(reader["Cocido"])
+                                Cocido = Convert.ToChar(reader["Cocido"]),
+                                idTipoConsumo = reader["idTipoconsumo"].ToString()
                             };
                             mesadet.Add(m);
 

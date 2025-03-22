@@ -175,9 +175,10 @@ namespace ApiRestRs.Controllers
                                 idCubiertos = reader["idCubiertos"] as int? ?? 0,
                                 idTurnoCubierto = reader["idTurnoCubierto"] as int? ?? 0,
                                 Nombre = reader["Nombre"].ToString(),
-                                idPagWeb = reader["idTurnoCubierto"] as int? ?? 0,
+                                idPagWeb = reader["idPagWeb"] as int? ?? 0,
                                 NombreWeb = reader["NombreWeb"].ToString(),
-                                sector_ini = reader["sector_ini"] as int? ?? 0
+                                sector_ini = reader["sector_ini"] as int? ?? 0,
+                                DescripCub = reader["DescripCub"].ToString(),
 
                             };
                             parammozos.Add(m);
