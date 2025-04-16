@@ -441,5 +441,114 @@ namespace ApiRestRs.Controllers
 
         }
 
+        [HttpGet("")]
+        [ActionName("usuario_validar")]
+        [EnableCors("MyCors")]
+        public IEnumerable<UsuarioPass> UsuarioPass(IConfiguration configuration, string clave)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            //if (HeadDb != null)
+            //{
+            //    con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            //}
+
+            List<UsuarioPass> UsuarioPass = new();
+          
+            string pass = Imprimir.Encriptar(clave,6474);
+            UsuarioPass up = new UsuarioPass();
+            { up.clave = pass;
+              UsuarioPass.Add(up);
+            }
+            
+            return UsuarioPass;
+
+        }
+
+        [HttpGet("")]
+        [ActionName("punto_sectores")]
+        [EnableCors("MyCors")]
+        public IEnumerable<PuntoSectores> PuntoSectores(IConfiguration configuration, int idPto)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
+            List<PuntoSectores> PuntoSectores = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_PuntoSectores", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@idPto", idPto);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            PuntoSectores s = new PuntoSectores
+                            {
+                                sucursal = Convert.ToInt32(reader["sucursal"]),
+                                idSector = Convert.ToInt32(reader["idSector"])
+                               
+
+                            };
+                            PuntoSectores.Add(s);
+
+                        }
+                    }
+                }
+                connection.Close();
+
+            }
+            return PuntoSectores;
+
+        }
+
+        [HttpGet("")]
+        [ActionName("punto_norubros")]
+        [EnableCors("MyCors")]
+        public IEnumerable<PuntoNoRubros> PuntoNoRubros(IConfiguration configuration, int idPto)
+        {
+            string? HeadDb = GetHeader.AnalizarHeaders(Request.Headers);
+            if (HeadDb != null)
+            {
+                con = configuration.GetConnectionString("conexion") + " Database = " + HeadDb + "; Password=6736";
+            }
+
+            List<PuntoNoRubros> PuntoNorubros = new();
+            using (SqlConnection connection = new(con))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new("spG_PuntoNoRubros", connection))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@idPto", idPto);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            PuntoNoRubros r = new PuntoNoRubros
+                            {
+                                sucursal = Convert.ToInt32(reader["sucursal"]),
+                                idRubro = Convert.ToInt32(reader["idRubro"])
+
+
+                            };
+                            PuntoNorubros.Add(r);
+
+                        }
+                    }
+                }
+                connection.Close();
+
+            }
+            return PuntoNorubros;
+
+        }
+
     } // Fin de la clase TablasAuxController
 } // fin del namespace ApiRestRs.Controllers

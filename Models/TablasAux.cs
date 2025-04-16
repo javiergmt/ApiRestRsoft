@@ -121,5 +121,23 @@ namespace ApiRestRs.Models
         public int nroMesa { get; set; }
   }
 
+    public class UsuarioPass
+    {
+        public string? clave { get; set; }
+        
+    }
 
+    public class PuntoSectores
+    {
+        public int sucursal { get; set; }
+        public int idSector { get; set; }
+
+    }
+
+    public class PuntoNoRubros
+    {
+        public int sucursal { get; set; }
+        public int idRubro { get; set; }
+
+    }
 }

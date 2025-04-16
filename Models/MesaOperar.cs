@@ -108,6 +108,7 @@
         public string? observacion { get; set; }
         public string? comentario { get; set; }
         public int puntoDeVenta { get; set; }
+        public int idSeccion { get; set; }
 
     }
     public class EnMesaDetCombos

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Cors;
 //using System.Data;
 using System.Data.SqlClient;
 using ApiRestRs.Authentication;
+using System.Data;
 
 namespace ApiRestRs.Controllers
 {
@@ -303,7 +304,45 @@ namespace ApiRestRs.Controllers
                     {
                         while (reader.Read())
                         {
-                            MesaDet m = new MesaDet
+                            string? det = "";
+                            if (reader["idTipoconsumo"].ToString() == "CV")
+                            {
+                                SqlConnection conG = new(con);
+                                SqlDataReader dataG;
+                                string sqlG = "Select Descripcion from En_MesaDet_Gustos  " +
+                                    " Where NroMesa = " + Convert.ToInt32(reader["NroMesa"]) +
+                                    " And IdDetalle = " + Convert.ToInt32(reader["IdDetalle"]);
+                                conG.Open();
+                                SqlCommand cmdG = new SqlCommand(sqlG, conG);
+                                dataG = cmdG.ExecuteReader();
+                                
+                                while (dataG.Read())
+                                {
+                                    det = det + dataG["Descripcion"].ToString() + ",";
+                                }
+                                det = det.Substring(0, det.Length - 1);
+                                conG.Close();
+                            };
+                            if (reader["idTipoconsumo"].ToString() == "CB")
+                            {
+                                SqlConnection conG = new(con);
+                                SqlDataReader dataG;
+                                string sqlG = "Select P.Descripcion from En_MesaDet_Combos c " +
+                                    "INNER JOIN PLATOS p ON p.idPlato = c.idPlato"+
+                                    " Where NroMesa = " + Convert.ToInt32(reader["NroMesa"]) +
+                                    " And IdDetalle = " + Convert.ToInt32(reader["IdDetalle"]);
+                                conG.Open();
+                                SqlCommand cmdG = new SqlCommand(sqlG, conG);
+                                dataG = cmdG.ExecuteReader();
+                                while (dataG.Read())
+                                {
+                                    det = det + dataG["Descripcion"].ToString() + ",";
+                                }
+                                det = det.Substring(0, det.Length - 1);
+                                conG.Close();
+                            }
+
+                                MesaDet m = new MesaDet
                             {
                                 NroMesa = Convert.ToInt32(reader["NroMesa"]),
                                 IdDetalle = Convert.ToInt32(reader["IdDetalle"]),
@@ -313,7 +352,9 @@ namespace ApiRestRs.Controllers
                                 Importe = Convert.ToDecimal(reader["Importe"]),
                                 Descripcion = reader["Descripcion"].ToString(),
                                 Cocido = Convert.ToChar(reader["Cocido"]),
-                                idTipoConsumo = reader["idTipoconsumo"].ToString()
+                                idTipoConsumo = reader["idTipoconsumo"].ToString(),
+                                detalles = det.ToString(),
+
                             };
                             mesadet.Add(m);
 

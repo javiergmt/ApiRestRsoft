@@ -429,7 +429,8 @@ namespace ApiRestRs.Controllers
                     cmd.Parameters.AddWithValue("@observacion", m.observacion);
                     cmd.Parameters.AddWithValue("@comentario", m.comentario);
                     cmd.Parameters.AddWithValue("@puntoDeVenta", m.puntoDeVenta);
-                    
+                    cmd.Parameters.AddWithValue("@idSeccion", m.idSeccion);
+
                     try
                     {
                         cmd.ExecuteNonQuery();

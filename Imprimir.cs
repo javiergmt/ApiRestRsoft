@@ -8,6 +8,9 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Drawing;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.Eventing.Reader;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace ApiRestRs
@@ -386,7 +389,7 @@ namespace ApiRestRs
             if (idImpComandaCentral != 0)
             {
 
-                Boolean titulo = false;
+                bool titulo = false;
                 SqlConnection conCent = new(con);
                 SqlDataReader dataCent;
                 string sqlCent = "Select * from Impresoras where idImpresora = " + idImpComandaCentral;
@@ -429,7 +432,7 @@ namespace ApiRestRs
                                                where (md.idSectorExped == idSectorExped || md.idTipoConsumo == "CB")
                                                select md;
                             #endregion
-                            Boolean titulosector = false;
+                            bool titulosector = false;
                             foreach (var ct in centralizada)
                             {
                                 if (!titulo)
@@ -820,7 +823,7 @@ namespace ApiRestRs
             if (idImpComandaCentral != 0)
             {
 
-                Boolean titulo = false;
+                bool titulo = false;
                 SqlConnection conCent = new(con);
                 SqlDataReader dataCent;
                 string sqlCent = "Select * from Impresoras where idImpresora = " + idImpComandaCentral;
@@ -863,7 +866,7 @@ namespace ApiRestRs
                                                where (md.idSectorExped == idSectorExped)
                                                select md;
                             #endregion
-                            Boolean titulosector = false;
+                            bool titulosector = false;
                             foreach (var ct in centralizada)
                             {
                                 if (!titulo)
@@ -1274,7 +1277,7 @@ namespace ApiRestRs
 
                     conPag.Close();
 
-                    Boolean titulo = true;
+                    bool titulo = true;
                     SqlConnection conDet = new(con);
                     SqlDataReader dataDetCon;
                     // Aca deberia hacer inner join con En_Mesa para obtener el nombre del mozo
@@ -1562,8 +1565,23 @@ namespace ApiRestRs
                 }
                 connection.Close();
                 return new JsonResult(new { res = 0, mensaje = "vacio" });
-
             }
+        }
+
+        public static string Encriptar(string input,int key)
+        {
+            char[] result = new char[input.Length];
+            int c1 = 52845; // Constante 1
+            int c2 = 11719; // Constante 2
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                result[i] = (char)(input[i] ^ (key >> 8));
+                key = ((result[i] + key) * c1 + c2) & 0xFFFF; // Aseguramos que key se mantenga en el rango de 16 bits
+            }
+
+            return new string(result);
+
         }
 
     }

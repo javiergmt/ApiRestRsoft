@@ -81,6 +81,7 @@
         public string? Descripcion { get; set; }
         public char Cocido { get; set; }
         public string? idTipoConsumo { get; set; }
+        public string? detalles { get; set; }
     }
 
 
